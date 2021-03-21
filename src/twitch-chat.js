@@ -1,5 +1,6 @@
 import { Client } from 'tmi.js'
 import { PureComponent } from 'react'
+import { getRandomColor } from './util'
 import './App.css'
 
 export class TwitchChat extends PureComponent {
@@ -16,7 +17,7 @@ export class TwitchChat extends PureComponent {
                 secure: true,
                 reconnect: true
             },
-            channels: ['grrrlikestaquitos', 't_mikage', 'littleteabag504']
+            channels: ['grrrlikestaquitos', 't_mikage']
         })
 
         this.state = {
@@ -45,33 +46,7 @@ export class TwitchChat extends PureComponent {
         }, fiveSeconds)
     }
 
-    getRandomColor = () => {
-        const randomNumber = Math.floor(Math.random() * (10 - 1) + 1)
-
-        switch (randomNumber) {
-            case 0:
-                return '#69A4FF'
-            case 1:
-                return '#ff8469'
-            case 2:
-                return '#FFEC69'
-            case 3:
-                return '#FF6991'
-            case 4:
-                return '#FFDB69'
-            case 5:
-                return '#6DFF69'
-            case 6:
-                return '#69FFD1'
-            case 7:
-                return '#69C0FF'
-            case 8:
-                return '#F291B9'
-            case 9:
-                return '#91E3F2'
-            default: return '#ffffff'
-        }
-    }
+    
 
     getMessageTimestamp = (timestamp) => {
         // Parse my timestamp to the following format: minutes, seconds
@@ -94,16 +69,24 @@ export class TwitchChat extends PureComponent {
         // First time user joined chat, no color assigned to themselves, assign new color
         if (this.userColor[username] === undefined) {
             const newUserColors = {...this.userColor}
-            newUserColors[username] = this.getRandomColor()
+            newUserColors[username] = getRandomColor()
             return newUserColors
         } else {
             return this.userColor
         }
     }
 
-    getMessages = (message) => {
+    getMessages = (newMessage) => {
+        const { username, message} = newMessage
         const newMessageList = [...this.state.messages]
-        newMessageList.push(message)
+
+        const lastMessageInList = newMessageList[newMessageList.length - 1]
+
+        if (lastMessageInList !== undefined && lastMessageInList.username === username) { // Most recent user sent another message
+            lastMessageInList.message += "\\n" + message
+        } else {
+            newMessageList.push(newMessage)
+        }
 
         if (newMessageList.length > 10) {
             newMessageList.shift()
@@ -132,15 +115,22 @@ export class TwitchChat extends PureComponent {
                     <span style={{ fontSize: 26, fontWeight: 'bold', color: userColor }}>{username}</span>
                     <span style={{ fontSize: 22 }}>{messageTimestamp}</span>
                 </div>
-                <span style={{ fontSize: 26 }}>{message}</span>
+                {message.split('\\n').map((text) => (
+                    <span style={{ fontSize: 26 }}>{text}</span>
+                ))}
             </div>
         )
     }
 
     render() {
         return (
-            <div style={{ height: '100%', width: '100%', justifyContent: 'flex-end' }}>
-                {this.state.messages.map((message) => this.renderMessage(message))}
+            <div style={{ width: '100%', height: '100%' }}>
+                <div style={{ width: '100%', backgroundColor: '#7A8284', alignItems: 'center', zIndex: 100 }}>
+                    <span style={{ margin: 8, fontSize: 25 }}>grrrlikestaquitos chat</span>
+                </div>
+                <div style={{ height: '95%', width: '100%', justifyContent: 'flex-end' }}>
+                    {this.state.messages.map((message) => this.renderMessage(message))}
+                </div>
             </div>
         )
     }
