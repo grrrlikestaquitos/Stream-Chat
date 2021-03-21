@@ -17,7 +17,7 @@ export class TwitchChat extends PureComponent {
                 secure: true,
                 reconnect: true
             },
-            channels: ['grrrlikestaquitos', 't_mikage']
+            channels: ['grrrlikestaquitos']
         })
 
         this.state = {
@@ -77,13 +77,14 @@ export class TwitchChat extends PureComponent {
     }
 
     getMessages = (newMessage) => {
-        const { username, message} = newMessage
+        const { username, message, timestamp } = newMessage
         const newMessageList = [...this.state.messages]
 
         const lastMessageInList = newMessageList[newMessageList.length - 1]
 
         if (lastMessageInList !== undefined && lastMessageInList.username === username) { // Most recent user sent another message
             lastMessageInList.message += "\\n" + message
+            lastMessageInList.timestamp = timestamp
         } else {
             newMessageList.push(newMessage)
         }
@@ -112,11 +113,11 @@ export class TwitchChat extends PureComponent {
         return (
             <div style={{ padding: 16 }}>
                 <div style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 26, fontWeight: 'bold', color: userColor }}>{username}</span>
-                    <span style={{ fontSize: 22 }}>{messageTimestamp}</span>
+                    <span style={{ fontSize: 28, fontWeight: 'bold', color: userColor }}>{username}</span>
+                    <span style={{ fontSize: 24 }}>{messageTimestamp}</span>
                 </div>
                 {message.split('\\n').map((text) => (
-                    <span style={{ fontSize: 26 }}>{text}</span>
+                    <span style={{ fontSize: 28 }}>{text}</span>
                 ))}
             </div>
         )
@@ -125,8 +126,8 @@ export class TwitchChat extends PureComponent {
     render() {
         return (
             <div style={{ width: '100%', height: '100%' }}>
-                <div style={{ width: '100%', backgroundColor: '#7A8284', alignItems: 'center', zIndex: 100 }}>
-                    <span style={{ margin: 8, fontSize: 25 }}>grrrlikestaquitos chat</span>
+                <div style={{ width: '100%', backgroundColor: '#6383A5', alignItems: 'center', zIndex: 100 }}>
+                    <span style={{ margin: 8, fontSize: 28 }}>grrrlikestaquitos chat</span>
                 </div>
                 <div style={{ height: '95%', width: '100%', justifyContent: 'flex-end' }}>
                     {this.state.messages.map((message) => this.renderMessage(message))}
