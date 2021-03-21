@@ -1,5 +1,6 @@
 import { Client } from 'tmi.js'
 import { PureComponent } from 'react'
+import './App.css'
 
 export class TwitchChat extends PureComponent {
     client
@@ -15,11 +16,13 @@ export class TwitchChat extends PureComponent {
                 secure: true,
                 reconnect: true
             },
-            channels: ['grrrlikestaquitos', 't_mikage', 'snowxcones', 'littleteabad504']
+            channels: ['grrrlikestaquitos']
+            // channels: ['grrrlikestaquitos', 't_mikage', 'snowxcones', 'littleteabad504']
         })
 
         this.state = {
             messages: [],
+            shouldRender: false
         }
     }
 
@@ -35,12 +38,16 @@ export class TwitchChat extends PureComponent {
 
             this.onMessageReceived(newMessage)
         })
+
+        const tenSeconds = 1000 * 10
+
+        setInterval(() => {
+            this.setState({ shouldRender: !this.state.shouldRender })
+        }, tenSeconds)
     }
 
     getRandomColor = () => {
         const randomNumber = Math.floor(Math.random() * (10 - 1) + 1)
-
-        console.log(`Random number generated was ${randomNumber}`)
 
         switch (randomNumber) {
             case 0:
@@ -77,12 +84,10 @@ export class TwitchChat extends PureComponent {
 
         if (differenceInTime >= oneMinute) {
             const minutes = Math.floor(differenceInTime / oneMinute)
-            console.log(`Minutes: ${minutes}`)
-            return `${minutes} ago`
+            return `${minutes} min ago`
         } else {
             const seconds = Math.floor(differenceInTime / oneSecond)
-            console.log(`Seconds: ${seconds}`)
-            return `${seconds} ago`
+            return `${seconds} sec ago`
         }
     }
 
@@ -120,15 +125,18 @@ export class TwitchChat extends PureComponent {
 
     renderMessage = ({ username, message, timestamp }) => {
         const userColor = this.userColor[username]
-        this.getMessageTimestamp(timestamp)
+        const messageTimestamp = this.getMessageTimestamp(timestamp)
         
         return (
-            <div>
-                <div style={{ flexDirection: 'row', margin: 20 }}>
-                    <span style={{ fontSize: 22, fontWeight: 'bold', color: userColor }}>{username + ": "}</span>
+            <div style={{ flexDirection: 'column' }}>
+                <div style={{ flexDirection: 'column',  margin: 20 }}>
+                    <div style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 22, fontWeight: 'bold', color: userColor }}>{username}</span>
+                        <span style={{ fontSize: 20 }}>{messageTimestamp}</span>
+                    </div>
                     <span style={{ fontSize: 22 }}>{message}</span>
                 </div>
-                <hr style={{ height: '1px', width: '100%', backgroundColor: 'white' }}/>
+                <hr style={{ width: '100%', backgroundColor: 'white' }}/>
             </div>
         )
     }
