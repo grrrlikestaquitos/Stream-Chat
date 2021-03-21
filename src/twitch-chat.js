@@ -16,8 +16,7 @@ export class TwitchChat extends PureComponent {
                 secure: true,
                 reconnect: true
             },
-            channels: ['grrrlikestaquitos']
-            // channels: ['grrrlikestaquitos', 't_mikage', 'snowxcones', 'littleteabad504']
+            channels: ['grrrlikestaquitos', 't_mikage', 'littleteabag504']
         })
 
         this.state = {
@@ -128,22 +127,19 @@ export class TwitchChat extends PureComponent {
         const messageTimestamp = this.getMessageTimestamp(timestamp)
         
         return (
-            <div style={{ flexDirection: 'column' }}>
-                <div style={{ flexDirection: 'column',  margin: 20 }}>
-                    <div style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: 22, fontWeight: 'bold', color: userColor }}>{username}</span>
-                        <span style={{ fontSize: 20 }}>{messageTimestamp}</span>
-                    </div>
-                    <span style={{ fontSize: 22 }}>{message}</span>
+            <div style={{ padding: 16 }}>
+                <div style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 26, fontWeight: 'bold', color: userColor }}>{username}</span>
+                    <span style={{ fontSize: 22 }}>{messageTimestamp}</span>
                 </div>
-                <hr style={{ width: '100%', backgroundColor: 'white' }}/>
+                <span style={{ fontSize: 26 }}>{message}</span>
             </div>
         )
     }
 
     render() {
         return (
-            <div style={{ flex: 1, flexDirection: 'column', alignSelf: 'flex-end' }}>
+            <div style={{ height: '100%', width: '100%', justifyContent: 'flex-end' }}>
                 {this.state.messages.map((message) => this.renderMessage(message))}
             </div>
         )
