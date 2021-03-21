@@ -39,11 +39,11 @@ export class TwitchChat extends PureComponent {
             this.onMessageReceived(newMessage)
         })
 
-        const tenSeconds = 1000 * 10
+        const fiveSeconds = 1000 * 5
 
         setInterval(() => {
             this.setState({ shouldRender: !this.state.shouldRender })
-        }, tenSeconds)
+        }, fiveSeconds)
     }
 
     getRandomColor = () => {
@@ -106,7 +106,7 @@ export class TwitchChat extends PureComponent {
         const newMessageList = [...this.state.messages]
         newMessageList.push(message)
 
-        if (newMessageList.length > 20) {
+        if (newMessageList.length > 10) {
             newMessageList.shift()
         }
 

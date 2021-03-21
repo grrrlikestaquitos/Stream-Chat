@@ -1,7 +1,6 @@
 .App {
   display: flex;
-  background-color: #282c34;
-  border-radius: 30px;
+  background-color: #3d424b;
   height: 100vh;
   width: 100vw;
   color: white;
@@ -9,6 +8,7 @@
 
 div {
   display: flex;
+  flex-direction: column;
 }
 
 @media (prefers-reduced-motion: no-preference) {
