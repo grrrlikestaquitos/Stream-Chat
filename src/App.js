@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { TwitchChat } from './twitch-chat';
-import './App.css';
+import { TwitchChat } from './components/TwitchChat';
+import './css/App.css';
 
 export default class App extends Component {
 
