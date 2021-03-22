@@ -1,6 +1,6 @@
 import '../css/App.css'
 
-export const TwitchMessage = ({ username, timestamp, message, usernameColor }) => {
+export const TwitchMessage = ({ username, timestamp, message, usernameColors }) => {
     const getMessageTimestamp = (timestamp) => {
         // Check time difference in timestamp from now
         const differenceInTime = Date.now() - timestamp
@@ -19,15 +19,41 @@ export const TwitchMessage = ({ username, timestamp, message, usernameColor }) =
 
     const messageTimestamp = getMessageTimestamp(timestamp)
 
+    const renderMessage = () => {
+        return (
+            message.split('\\n').map((text, index) => {
+                const arrayOfText = text.split(' ') // Array of text with a white space delimiter
+
+                return (
+                    <div style={{ display: 'inline-block', flexDirection: 'row' }}>
+                        {arrayOfText.map((subText, subIndex) => {
+                            const regex = new RegExp('@[^\s]+')
+                            const containsUserMention = regex.test(subText)
+                            var color = 'white'
+    
+                            if (containsUserMention) {
+                                const extractedUsername = subText.substring(1).toLowerCase()
+                                console.log(`extracted username: ${extractedUsername}`)
+                                color = usernameColors[extractedUsername]
+                            }
+                            
+                            return (
+                                <span key={username + text + index + subIndex} style={{ fontSize: 28, color }}>{subText + ' '}</span>
+                            )
+                        })}
+                    </div>
+                )
+            })
+        )
+    }
+
     return (
         <div style={{ padding: 16 }}>
             <div style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 28, fontWeight: 'bold', color: usernameColor }}>{username}</span>
+                <span style={{ fontSize: 28, fontWeight: 'bold', color: usernameColors[username] }}>{username}</span>
                 <span style={{ fontSize: 24 }}>{messageTimestamp}</span>
             </div>
-            {message.split('\\n').map((text, index) => (
-                <span key={text + index} style={{ fontSize: 28 }}>{text}</span>
-            ))}
+            {renderMessage()}
         </div>
     )
 }

@@ -101,14 +101,14 @@ export const TwitchChat = () => {
                 <div style={{ height: '95%', width: '100%', justifyContent: 'flex-end' }}>
                     {messages.map((messageObj, index) => {
                         const { username, timestamp, message } = messageObj
-                        const usernameColor = usernameColors.current[username]
+
                         return (
                             <TwitchMessage
                                 key={username + message + index}
                                 username={username}
                                 timestamp={timestamp}
                                 message={message}
-                                usernameColor={usernameColor}
+                                usernameColors={usernameColors.current}
                             />
                         )
                     })}

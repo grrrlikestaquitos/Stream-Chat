@@ -1,7 +1,7 @@
 .App {
   display: flex;
   /* background-color: #3d424b; */
-  background-color: rgba(61, 66, 75, 0.6);
+  background-color: rgba(61, 66, 75, 1);
   border-radius: 20px;
   height: 100vh;
   width: 100vw;
