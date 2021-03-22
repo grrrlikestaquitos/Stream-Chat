@@ -47,7 +47,7 @@ export const TwitchChat = () => {
                 message
             }
 
-            generateUsernameColors(message.username)
+            generateUsernameColors(newMessage.username)
             generateMessagesList(newMessage)
         })
     }
@@ -92,9 +92,8 @@ export const TwitchChat = () => {
         setMessages(newMessageList)
     }
 
-    console.log(`Rerender Twitch Chat`)
-
     return (
+        <Transition>
             <div style={{ width: '100%', height: '100%' }}>
                 <div style={{ width: '100%', backgroundColor: '#6383A5', alignItems: 'center', zIndex: 100 }}>
                     <span style={{ margin: 8, fontSize: 28 }}>grrrlikestaquitos chat</span>
@@ -115,5 +114,6 @@ export const TwitchChat = () => {
                     })}
                 </div>
             </div>
+        </Transition>
     )
 }

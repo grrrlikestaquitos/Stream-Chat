@@ -12,7 +12,7 @@ export const TwitchMessage = ({ username, timestamp, message, usernameColor }) =
             const minutes = Math.floor(differenceInTime / oneMinute)
             return `${minutes} min ago`
         } else {
-            const seconds = Math.floor(differenceInTime / oneSecond)
+            const seconds = Math.ceil(differenceInTime / oneSecond)
             return `${seconds} sec ago`
         }
     }
