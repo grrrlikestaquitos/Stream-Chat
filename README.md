@@ -14,3 +14,5 @@ A Stream Chat for Twitch - built with React
 - Settings Page
 - Auto Update
 - Twitch Emotes
+- Streamer/Broadcaster can reply to specific messages
+- Viewer badges
