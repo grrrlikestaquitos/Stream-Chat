@@ -48,7 +48,7 @@ export const TwitchMessage = ({ username, timestamp, message, usernameColors }) 
     }
 
     return (
-        <div style={{ padding: 16 }}>
+        <div style={{ paddingLeft: 16, paddingRight: 16, paddingTop: 12, paddingBottom: 12 }}>
             <div style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 28, fontWeight: 'bold', color: usernameColors[username] }}>{username}</span>
                 <span style={{ fontSize: 24 }}>{messageTimestamp}</span>

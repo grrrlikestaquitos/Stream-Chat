@@ -98,7 +98,7 @@ export const TwitchChat = () => {
                 <div style={{ width: '100%', backgroundColor: '#6383A5', alignItems: 'center', zIndex: 100 }}>
                     <span style={{ margin: 8, fontSize: 28 }}>grrrlikestaquitos chat</span>
                 </div>
-                <div style={{ height: '95%', width: '100%', justifyContent: 'flex-end' }}>
+                <div style={{ height: '90%', width: '100%', justifyContent: 'flex-end' }}>
                     {messages.map((messageObj, index) => {
                         const { username, timestamp, message } = messageObj
 
