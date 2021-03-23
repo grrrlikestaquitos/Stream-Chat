@@ -48,12 +48,15 @@ export const TwitchMessage = ({ username, timestamp, message, usernameColors }) 
     }
 
     return (
-        <div style={{ paddingLeft: 16, paddingRight: 16, paddingTop: 12, paddingBottom: 12 }}>
-            <div style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 28, fontWeight: 'bold', color: usernameColors[username] }}>{username}</span>
-                <span style={{ fontSize: 24 }}>{messageTimestamp}</span>
+        <div>
+            <hr style={{ width: '100%', border: 'none', color: '#7A808A', backgroundColor: '#7A808A', height: '2px' }}/>
+            <div style={{ paddingLeft: '4%', paddingRight: '4%', paddingTop: '2%', paddingBottom: '2%' }}>
+                <div style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 28, fontWeight: 'bold', color: usernameColors[username] }}>{username}</span>
+                    <span style={{ fontSize: 24 }}>{messageTimestamp}</span>
+                </div>
+                {renderMessage()}
             </div>
-            {renderMessage()}
         </div>
     )
 }
