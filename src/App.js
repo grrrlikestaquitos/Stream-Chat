@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TwitchChat } from './components/TwitchChat';
+import { StreamChat } from './components/StreamChat';
 import './css/App.css';
 
 export default class App extends Component {
@@ -7,7 +7,7 @@ export default class App extends Component {
   render() {
     return (
       <div className="App">
-        <TwitchChat />
+        <StreamChat />
       </div>
     )
   }

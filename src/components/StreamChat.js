@@ -1,12 +1,14 @@
 import { Client } from 'tmi.js'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, Component } from 'react'
 import { getRandomColor } from '../util/util'
-import { TwitchMessage } from './TwitchMessage'
+import { StreamMessage } from './StreamMessage'
 import { Transition } from 'react-transition-group'
 
 import '../css/App.css'
+import { message } from 'statuses'
+import console from 'node:console'
 
-export const TwitchChat = () => {
+export const StreamChat = () => {
     const client = useRef(null)
 
     // State
@@ -36,6 +38,10 @@ export const TwitchChat = () => {
         connectAndListenToMessage()
         rerenderMessageList()
     }, [])
+
+    useEffect(() => {
+        console.log('state was changed for messages')
+    }, [message])
 
     const connectAndListenToMessage = () => {
         client.current.connect()
@@ -103,7 +109,7 @@ export const TwitchChat = () => {
                         const { username, timestamp, message } = messageObj
 
                         return (
-                            <TwitchMessage
+                            <StreamMessage
                                 key={username + message + index}
                                 username={username}
                                 timestamp={timestamp}

@@ -1,6 +1,6 @@
 import '../css/App.css'
 
-export const TwitchMessage = ({ username, timestamp, message, usernameColors }) => {
+export const StreamMessage = ({ username, timestamp, message, usernameColors }) => {
     const getMessageTimestamp = (timestamp) => {
         // Check time difference in timestamp from now
         const differenceInTime = Date.now() - timestamp
