@@ -1,12 +1,9 @@
 import { Client } from 'tmi.js'
-import { useEffect, useState, useRef, Component } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
-import { Transition } from 'react-transition-group'
 
 import '../css/App.css'
-import { message } from 'statuses'
-import console from 'node:console'
 
 export const StreamChat = () => {
     const client = useRef(null)
@@ -18,6 +15,7 @@ export const StreamChat = () => {
     // Refs
     const usernameColors = useRef({})
     const lastMessageTimestamp = useRef(Date.now())
+    const lastMessageRef = useRef(undefined)
 
     // Refs Dependent on state
     const messagesRef = useRef([])
@@ -26,6 +24,7 @@ export const StreamChat = () => {
     messagesRef.current = messages
     rerenderUIRef.current = rerenderUI
 
+    // Use Effect
     useEffect(() => {
         client.current = new Client({
             connection: {
@@ -40,8 +39,11 @@ export const StreamChat = () => {
     }, [])
 
     useEffect(() => {
-        console.log('state was changed for messages')
-    }, [message])
+        console.log(`state was changed for messages: ${messages}, ref: ${lastMessageRef.current}`)
+        if (lastMessageRef.current !== undefined) {
+            lastMessageRef.current.focus()
+        }
+    }, [messages])
 
     const connectAndListenToMessage = () => {
         client.current.connect()
@@ -98,28 +100,32 @@ export const StreamChat = () => {
         setMessages(newMessageList)
     }
 
-    return (
-        <Transition>
-            <div style={{ width: '100%', height: '100%' }}>
-                <div style={{ width: '100%', backgroundColor: '#6383A5', alignItems: 'center', zIndex: 100 }}>
-                    <span style={{ margin: '1%', fontSize: 28 }}>grrrlikestaquitos chat</span>
-                </div>
-                <div style={{ flex: 1, width: '100%', overflowY: 'scroll', justifyContent: 'flex-end' }}>
-                    {messages.map((messageObj, index) => {
-                        const { username, timestamp, message } = messageObj
+    const getLastMessageRef = (ref) => {
+        lastMessageRef.current = ref
+    }
 
-                        return (
-                            <StreamMessage
-                                key={username + message + index}
-                                username={username}
-                                timestamp={timestamp}
-                                message={message}
-                                usernameColors={usernameColors.current}
-                            />
-                        )
-                    })}
-                </div>
+    return (
+        <div style={{ width: '100%', height: '100%' }}>
+            <div style={{ backgroundColor: '#6383A5', alignItems: 'center', zIndex: 100 }}>
+                <span style={{ margin: '1%', fontSize: 28 }}>grrrlikestaquitos chat</span>
             </div>
-        </Transition>
+            <div style={{ flex: 1, overflowY: 'scroll' }}>
+                {messages.map((messageObj, index, readOnlyArray) => {
+                    const { username, timestamp, message } = messageObj
+
+                    return (
+                        <StreamMessage
+                            key={username + message + index}
+                            username={username}
+                            timestamp={timestamp}
+                            message={message}
+                            usernameColors={usernameColors.current}
+                            isMostRecentMessage={(readOnlyArray.length - 1 === index)}
+                            getLastMessageRef={getLastMessageRef}
+                        />
+                    )
+                })}
+            </div>
+        </div>
     )
 }
