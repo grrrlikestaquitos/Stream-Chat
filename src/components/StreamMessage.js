@@ -28,7 +28,6 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
 
     // wrap this into a useCallback or memo
     const retrieveMessageRef = useCallback((ref) => {
-        console.log(`Ref is being assigned ${ref}`)
         if (getLastMessageRef !== undefined && isMostRecentMessage) {
             getLastMessageRef(ref)
         }
@@ -51,7 +50,6 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
     
                             if (containsUserMention) {
                                 const extractedUsername = subText.substring(1).toLowerCase()
-                                console.log(`extracted username: ${extractedUsername}`)
                                 color = usernameColors[extractedUsername]
                             }
                             

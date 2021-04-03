@@ -35,15 +35,21 @@ export const StreamChat = () => {
         })
 
         connectAndListenToMessage()
-        rerenderMessageList()
+        // rerenderMessageList()
     }, [])
 
     useEffect(() => {
-        console.log(`state was changed for messages: ${messages}, ref: ${lastMessageRef.current}`)
-        if (lastMessageRef.current !== undefined) {
-            lastMessageRef.current.focus()
-        }
+        scrollToBottom()
     }, [messages])
+
+    const scrollToBottom = () => {
+        if (lastMessageRef.current !== undefined) {
+            lastMessageRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            })
+        }
+    }
 
     const connectAndListenToMessage = () => {
         client.current.connect()
@@ -112,7 +118,8 @@ export const StreamChat = () => {
             <div style={{ flex: 1, overflowY: 'scroll' }}>
                 {messages.map((messageObj, index, readOnlyArray) => {
                     const { username, timestamp, message } = messageObj
-
+                    const isMostRecentMessage = !!(readOnlyArray.length - 1 === index)
+                    
                     return (
                         <StreamMessage
                             key={username + message + index}
@@ -120,7 +127,7 @@ export const StreamChat = () => {
                             timestamp={timestamp}
                             message={message}
                             usernameColors={usernameColors.current}
-                            isMostRecentMessage={(readOnlyArray.length - 1 === index)}
+                            isMostRecentMessage={isMostRecentMessage}
                             getLastMessageRef={getLastMessageRef}
                         />
                     )
