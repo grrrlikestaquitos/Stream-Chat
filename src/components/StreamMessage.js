@@ -1,6 +1,15 @@
+import { useCallback } from 'react'
 import '../css/App.css'
 
-export const StreamMessage = ({ username, timestamp, message, usernameColors }) => {
+// PROPS
+// username (string, required)
+// timestamp (string, required)
+// message (string, required)
+// usernameColors (string, required)
+// isMostRecentMessage (boolean, optional)
+// getLastMessageRef ((ref: HTMLRef) => void, optional)
+
+export const StreamMessage = ({ username, timestamp, message, usernameColors, isMostRecentMessage, getLastMessageRef }) => {
     const getMessageTimestamp = (timestamp) => {
         // Check time difference in timestamp from now
         const differenceInTime = Date.now() - timestamp
@@ -17,15 +26,23 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors }) 
         }
     }
 
+    // wrap this into a useCallback or memo
+    const retrieveMessageRef = useCallback((ref) => {
+        if (getLastMessageRef !== undefined && isMostRecentMessage) {
+            getLastMessageRef(ref)
+        }
+    }, [message])
+
     const messageTimestamp = getMessageTimestamp(timestamp)
 
     const renderMessage = () => {
         return (
-            message.split('\\n').map((text, index) => {
-                const arrayOfText = text.split(' ') // Array of text with a white space delimiter
+            message.split('\\n').map((text, index, readOnlyArray) => {
+                const arrayOfText = text.split(' ') // Split text if there is a white space
+                const isLastItem = (readOnlyArray.length - 1) === index
 
                 return (
-                    <div style={{ display: 'inline-block', flexDirection: 'row' }}>
+                    <div key={username + text + index } style={{ display: 'inline-block', flexDirection: 'row' }} ref={isLastItem ? retrieveMessageRef : null}>
                         {arrayOfText.map((subText, subIndex) => {
                             const regex = new RegExp('@[^\s]+')
                             const containsUserMention = regex.test(subText)
@@ -33,13 +50,10 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors }) 
     
                             if (containsUserMention) {
                                 const extractedUsername = subText.substring(1).toLowerCase()
-                                console.log(`extracted username: ${extractedUsername}`)
                                 color = usernameColors[extractedUsername]
                             }
                             
-                            return (
-                                <span key={username + text + index + subIndex} style={{ fontSize: 28, color }}>{subText + ' '}</span>
-                            )
+                            return <span key={username + subText + subIndex} style={{ fontSize: 28, color }}>{subText + ' '}</span>
                         })}
                     </div>
                 )
