@@ -102,11 +102,16 @@ export const StreamChat = () => {
     }
 
     // Touch/UI Events 
-    const onScroll = (ev) => {
-        const target = ev.target
-        const didScrollToBottom = target.scrollHeight - target.scrollTop === target.clientHeight
-        
-        console.log(didScrollToBottom)
+    const onScroll = ({ target }) => {
+        const lastMessageHeight = 40
+        const currentScrollHeightFloor = target.scrollHeight - Math.floor(target.scrollTop)
+        const currentScrollHeightCeil = target.scrollHeight - Math.ceil(target.scrollTop)
+        const scrollTopDifference = currentScrollHeightCeil - target.clientHeight
+
+        const didScrollToBottom = scrollTopDifference < lastMessageHeight ||
+                                  currentScrollHeightCeil === target.clientHeight ||
+                                  currentScrollHeightFloor === target.clientHeight
+
         !didScrollToBottom && setAutoScrollEnabled(false)
         didScrollToBottom && setAutoScrollEnabled(true)
     }
