@@ -1,18 +1,18 @@
 import { Client } from 'tmi.js'
-import { useEffect, useState, useRef } from 'react'
-import { getRandomColor } from '../util/util'
+import { useEffect, useState, useRef, useCallback } from 'react'
+import { debounce, getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
 
 import '../css/App.css'
 
 export const StreamChat = () => {
-    const client = useRef(null)
-
     // State
     const [rerenderUI, setRerenderUI] = useState(false)
     const [messages, setMessages] = useState([])
+    const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
 
     // Refs
+    const client = useRef(null)
     const usernameColors = useRef({})
     const lastMessageTimestamp = useRef(Date.now())
     const lastMessageRef = useRef(undefined)
@@ -20,9 +20,11 @@ export const StreamChat = () => {
     // Refs Dependent on state
     const messagesRef = useRef([])
     const rerenderUIRef = useRef(false)
+    const autoScrollEnabledRef = useRef(true)
 
     messagesRef.current = messages
     rerenderUIRef.current = rerenderUI
+    autoScrollEnabledRef.current = autoScrollEnabled
 
     // Use Effect
     useEffect(() => {
@@ -39,31 +41,24 @@ export const StreamChat = () => {
     }, [])
 
     useEffect(() => {
-        scrollToBottom()
+        autoScrollEnabled && scrollToBottom()
     }, [messages])
 
-    const scrollToBottom = () => {
-        if (lastMessageRef.current !== undefined) {
-            lastMessageRef.current.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            })
-        }
-    }
-
+    // Message Handling
     const connectAndListenToMessage = () => {
         client.current.connect()
+        client.current.on('message', newMessageReceived)
+    }
 
-        client.current.on('message', (channel, tags, message) => {
-            const newMessage = {
-                username: tags.username,
-                timestamp: tags['tmi-sent-ts'],
-                message
-            }
+    const newMessageReceived = (channel, tags, message) => {
+        const newMessage = {
+            username: tags.username,
+            timestamp: tags['tmi-sent-ts'],
+            message
+        }
 
-            generateUsernameColors(newMessage.username)
-            generateMessagesList(newMessage)
-        })
+        generateUsernameColors(newMessage.username)
+        generateMessagesList(newMessage)
     }
 
     const rerenderMessageList = () => {
@@ -72,9 +67,7 @@ export const StreamChat = () => {
         setInterval(() => {
             const diffInTime = Date.now() - lastMessageTimestamp.current
 
-            if (diffInTime >= fiveSeconds) {
-                setRerenderUI(!rerenderUIRef.current)
-            }
+            diffInTime >= fiveSeconds && setRerenderUI(!rerenderUIRef.current)
         }, fiveSeconds)
     }
 
@@ -82,7 +75,7 @@ export const StreamChat = () => {
         // First time user joined chat, no color assigned to themselves, assign new color
         if (usernameColors.current[username] === undefined) {
             usernameColors.current[username] = getRandomColor()
-        } 
+        }
     }
 
     const generateMessagesList = (newMessage) => {
@@ -98,9 +91,7 @@ export const StreamChat = () => {
             newMessageList.push(newMessage)
         }
 
-        if (newMessageList.length > 10) {
-            newMessageList.shift()
-        }
+        newMessageList.length > 10 && newMessageList.shift()
 
         lastMessageTimestamp.current = Date.now()
         setMessages(newMessageList)
@@ -110,16 +101,39 @@ export const StreamChat = () => {
         lastMessageRef.current = ref
     }
 
+    // Touch/UI Events 
+    const onScroll = (ev) => {
+        const target = ev.target
+        const didScrollToBottom = target.scrollHeight - target.scrollTop === target.clientHeight
+        
+        console.log(didScrollToBottom)
+        !didScrollToBottom && setAutoScrollEnabled(false)
+        didScrollToBottom && setAutoScrollEnabled(true)
+    }
+
+    const scrollToBottom = () => {
+        lastMessageRef.current !== undefined &&
+        lastMessageRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        })
+    }
+
+    const onClickAutoScroll = () => {
+        !autoScrollEnabledRef.current && scrollToBottom()
+    }
+
     return (
         <div style={{ width: '100%', height: '100%' }}>
             <div style={{ backgroundColor: '#6383A5', alignItems: 'center', zIndex: 100 }}>
                 <span style={{ margin: '1%', fontSize: 28 }}>grrrlikestaquitos chat</span>
             </div>
-            <div style={{ flex: 1, overflowY: 'scroll' }}>
+
+            <div style={{ flex: 1, overflowY: 'scroll' }} onScroll={onScroll}>
                 {messages.map((messageObj, index, readOnlyArray) => {
                     const { username, timestamp, message } = messageObj
                     const isMostRecentMessage = !!(readOnlyArray.length - 1 === index)
-                    
+
                     return (
                         <StreamMessage
                             key={username + message + index}
@@ -133,6 +147,12 @@ export const StreamChat = () => {
                     )
                 })}
             </div>
+
+            {!autoScrollEnabled &&
+            <div onClick={onClickAutoScroll} style={{ backgroundColor: '#F5BE52', alignItems: 'center', position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+                <span style={{ margin: '1%', fontSize: 28 }}>Resume AutoScroll</span>
+            </div>
+            }
         </div>
     )
 }
