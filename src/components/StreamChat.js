@@ -37,7 +37,7 @@ export const StreamChat = () => {
         })
 
         connectAndListenToMessage()
-        // rerenderMessageList()
+        rerenderMessageList()
     }, [])
 
     useEffect(() => {
