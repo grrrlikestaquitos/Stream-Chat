@@ -141,9 +141,9 @@ export const StreamChat = () => {
     }
 
     return (
-        <div style={{ width: '100%', height: '100%' }}>
-            <div style={{ backgroundColor: '#6383A5', alignItems: 'center', zIndex: 100 }}>
-                <span style={{ margin: '1%', fontSize: 28 }}>{Constants.chatHeader}</span>
+        <div style={Styles.containerDiv}>
+            <div style={Styles.headerDiv}>
+                <span style={Styles.headerSpan}>{Constants.chatHeader}</span>
             </div>
 
             <div style={Styles.messagesDiv} onScroll={onScroll}>
@@ -175,6 +175,19 @@ export const StreamChat = () => {
 }
 
 const Styles = {
+    containerDiv: {
+        width: '100%',
+        height: '100%'
+    },
+    headerDiv: {
+        backgroundColor: '#6383A5',
+        alignItems: 'center',
+        zIndex: 100
+    },
+    headerSpan: {
+        margin: '1%',
+        fontSize: 28
+    },
     messagesDiv: {
         flex: 1,
         overflowY: 'scroll'

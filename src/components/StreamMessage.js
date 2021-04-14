@@ -30,7 +30,7 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
         const regex = new RegExp('@[^\s]+')
         const containsUserMention = regex.test(text)
 
-        if (containsUserMention) {
+        if (containsUserMention && true) { // TODO: Setting to enable/disable feature
             const extractedUsername = text.substring(1).toLowerCase()
             return extractedUsername
         }
@@ -55,14 +55,14 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
             if (true) { // color mapping of usernames
                 const arrayOfText = text.split(' ') // Split text if there is a white space
                 return (
-                    <div key={username + text + index } style={{ display: 'inline-block', flexDirection: 'row' }} ref={isLastItem ? retrieveMessageRef : null}>
+                    <div key={username + text + index } style={Styles.subTextDiv} ref={isLastItem ? retrieveMessageRef : null}>
                         {arrayOfText.map(renderableSubTextComponent)}
                     </div>
                 )
             }
 
             return (
-                <div key={username + text + index } style={{ display: 'inline-block', flexDirection: 'row' }} ref={isLastItem ? retrieveMessageRef : null}>
+                <div key={username + text + index } style={Styles.subTextDiv} ref={isLastItem ? retrieveMessageRef : null}>
                     {renderableSubTextComponent(text, index)}
                 </div>
             )
@@ -105,6 +105,10 @@ const Styles = {
         paddingRight: '4%',
         paddingTop: '2%',
         paddingBottom: '2%'
+    },
+    subTextDiv: {
+        display: 'inline-block',
+        flexDirection: 'row'
     },
     userNameDiv: {
         flexDirection: 'row',
