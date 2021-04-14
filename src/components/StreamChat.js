@@ -1,9 +1,14 @@
 import { Client } from 'tmi.js'
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { debounce, getRandomColor } from '../util/util'
+import { getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
 
 import '../css/App.css'
+
+const Constants = {
+    chatHeader: 'Chat',
+    chatPaused: 'Chat Paused'
+}
 
 export const StreamChat = () => {
     // State
@@ -51,12 +56,13 @@ export const StreamChat = () => {
     }
 
     const newMessageReceived = (channel, tags, message) => {
-        const newMessage = {
+        let newMessage = {
             username: tags.username,
             timestamp: tags['tmi-sent-ts'],
             message
         }
 
+        newMessage = filterMessage(newMessage)
         generateUsernameColors(newMessage.username)
         generateMessagesList(newMessage)
     }
@@ -69,6 +75,12 @@ export const StreamChat = () => {
 
             diffInTime >= fiveSeconds && setRerenderUI(!rerenderUIRef.current)
         }, fiveSeconds)
+    }
+
+    const filterMessage = (message) => {
+        let filteredMessage = message
+        filteredMessage.message = filteredMessage.message.replace(/\\n/g, '') // Remove any linebreaks inputted by viewers (in an attempt to override user settings)
+        return filteredMessage
     }
 
     const generateUsernameColors = (username) => {
@@ -84,8 +96,8 @@ export const StreamChat = () => {
         const newMessageList = [...messagesRef.current]
         const lastMessageInList = newMessageList[newMessageList.length - 1]
 
-        if (lastMessageInList !== undefined && lastMessageInList.username === username) { // Most recent user sent another message
-            lastMessageInList.message += "\\n" + message
+        if (lastMessageInList !== undefined && lastMessageInList.username === username && false) { // Most recent user sent another message
+            lastMessageInList.message += '\\n' + message
             lastMessageInList.timestamp = timestamp
         } else {
             newMessageList.push(newMessage)
@@ -131,10 +143,10 @@ export const StreamChat = () => {
     return (
         <div style={{ width: '100%', height: '100%' }}>
             <div style={{ backgroundColor: '#6383A5', alignItems: 'center', zIndex: 100 }}>
-                <span style={{ margin: '1%', fontSize: 28 }}>grrrlikestaquitos chat</span>
+                <span style={{ margin: '1%', fontSize: 28 }}>{Constants.chatHeader}</span>
             </div>
 
-            <div style={{ flex: 1, overflowY: 'scroll' }} onScroll={onScroll}>
+            <div style={Styles.messagesDiv} onScroll={onScroll}>
                 {messages.map((messageObj, index, readOnlyArray) => {
                     const { username, timestamp, message } = messageObj
                     const isMostRecentMessage = !!(readOnlyArray.length - 1 === index)
@@ -154,10 +166,29 @@ export const StreamChat = () => {
             </div>
 
             {!autoScrollEnabled &&
-            <div onClick={onClickAutoScroll} style={{ backgroundColor: '#F5BE52', alignItems: 'center', position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-                <span style={{ margin: '1%', fontSize: 28 }}>Resume AutoScroll</span>
+            <div style={Styles.autoScrollDiv} onClick={onClickAutoScroll}>
+                <span style={Styles.autoScrollSpan}>{Constants.chatPaused}</span>
             </div>
             }
         </div>
     )
+}
+
+const Styles = {
+    messagesDiv: {
+        flex: 1,
+        overflowY: 'scroll'
+    },
+    autoScrollDiv: {
+        backgroundColor: '#F5BE52',
+        alignItems: 'center',
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0
+    },
+    autoScrollSpan: {
+        margin: '1%',
+        fontSize: 28
+    }
 }

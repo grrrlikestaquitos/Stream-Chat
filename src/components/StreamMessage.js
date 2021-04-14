@@ -26,51 +26,96 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
         }
     }
 
-    // wrap this into a useCallback or memo
+    const getUsernameIfMentioned = (text) => {
+        const regex = new RegExp('@[^\s]+')
+        const containsUserMention = regex.test(text)
+
+        if (containsUserMention) {
+            const extractedUsername = text.substring(1).toLowerCase()
+            return extractedUsername
+        }
+    }
+
     const retrieveMessageRef = useCallback((ref) => {
         if (getLastMessageRef !== undefined && isMostRecentMessage) {
             getLastMessageRef(ref)
         }
     }, [message])
 
-    const messageTimestamp = getMessageTimestamp(timestamp)
-
     const renderMessage = () => {
-        return (
-            message.split('\\n').map((text, index, readOnlyArray) => {
-                const arrayOfText = text.split(' ') // Split text if there is a white space
-                const isLastItem = (readOnlyArray.length - 1) === index
+        const renderableMessageComponent = (text, index, readOnlyArray) => {
+            const isLastItem = (readOnlyArray.length - 1) === index
 
+            const renderableSubTextComponent = (subText, subIndex) => {
+                const username = getUsernameIfMentioned(subText)
+                const color = usernameColors[username]
+                return <span key={username + subText + subIndex} style={{ fontSize: 28, color }}>{subText + ' '}</span>
+            }
+
+            if (true) { // color mapping of usernames
+                const arrayOfText = text.split(' ') // Split text if there is a white space
                 return (
                     <div key={username + text + index } style={{ display: 'inline-block', flexDirection: 'row' }} ref={isLastItem ? retrieveMessageRef : null}>
-                        {arrayOfText.map((subText, subIndex) => {
-                            const regex = new RegExp('@[^\s]+')
-                            const containsUserMention = regex.test(subText)
-                            var color = 'white'
-    
-                            if (containsUserMention) {
-                                const extractedUsername = subText.substring(1).toLowerCase()
-                                color = usernameColors[extractedUsername]
-                            }
-                            
-                            return <span key={username + subText + subIndex} style={{ fontSize: 28, color }}>{subText + ' '}</span>
-                        })}
+                        {arrayOfText.map(renderableSubTextComponent)}
                     </div>
                 )
-            })
-        )
+            }
+
+            return (
+                <div key={username + text + index } style={{ display: 'inline-block', flexDirection: 'row' }} ref={isLastItem ? retrieveMessageRef : null}>
+                    {renderableSubTextComponent(text, index)}
+                </div>
+            )
+        }
+
+        if (false) { // should split messages if contains line break
+            const mergedMessagesSplit = message.split(`\\n`)
+            return mergedMessagesSplit.map(renderableMessageComponent)
+        }
+        
+        return renderableMessageComponent(message, 0, [message])
     }
+
+    const messageTimestamp = getMessageTimestamp(timestamp)
 
     return (
         <div>
-            <hr style={{ width: '100%', border: 'none', color: '#7A808A', backgroundColor: '#7A808A', height: '2px' }}/>
-            <div style={{ paddingLeft: '4%', paddingRight: '4%', paddingTop: '2%', paddingBottom: '2%' }}>
-                <div style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 28, fontWeight: 'bold', color: usernameColors[username] }}>{username}</span>
-                    <span style={{ fontSize: 24 }}>{messageTimestamp}</span>
+            <hr style={Styles.lineHr}/>
+            <div style={Styles.messageDiv}>
+                <div style={Styles.userNameDiv}>
+                    <span style={{...Styles.userNameSpan, color: usernameColors[username]}}>{username}</span>
+                    <span style={Styles.timestampSpan}>{messageTimestamp}</span>
                 </div>
                 {renderMessage()}
             </div>
         </div>
     )
+}
+
+const Styles = {
+    lineHr: {
+        width: '100%',
+        border: 'none',
+        color: '#7A808A',
+        backgroundColor: '#7A808A',
+        height: '2px'
+    },
+    messageDiv: {
+        paddingLeft: '4%',
+        paddingRight: '4%',
+        paddingTop: '2%',
+        paddingBottom: '2%'
+    },
+    userNameDiv: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    userNameSpan: {
+        fontSize: 28,
+        fontWeight: 'bold'
+    },
+    timestampSpan: {
+        fontSize: 24
+    }
 }

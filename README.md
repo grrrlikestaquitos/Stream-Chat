@@ -12,7 +12,8 @@ A Stream Chat for Twitch - built with React
 - Limit Number Of Saved Messages
 - Animations (Fade In, Slide, Spring)
 - Censorship/Filtering/Replace Messages
-- Settings Page
+- Settings Page 
+  - (Enable/Disable Features: Message merging, mention coloring)
 - Auto Update
 - Twitch Emotes
 - Streamer/Broadcaster can reply to specific messages
