@@ -15,6 +15,7 @@ export const StreamChat = () => {
     const [rerenderUI, setRerenderUI] = useState(false)
     const [messages, setMessages] = useState([])
     const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
+    const [enableResumeHighlight, setEnableResumeHighlight] = useState(false)
 
     // Refs
     const client = useRef(null)
@@ -103,7 +104,7 @@ export const StreamChat = () => {
             newMessageList.push(newMessage)
         }
 
-        newMessageList.length > 10 && newMessageList.shift()
+        newMessageList.length > 50 && newMessageList.shift()
 
         lastMessageTimestamp.current = Date.now()
         setMessages(newMessageList)
@@ -138,6 +139,15 @@ export const StreamChat = () => {
 
     const onClickAutoScroll = () => {
         !autoScrollEnabledRef.current && scrollToBottom()
+        setEnableResumeHighlight(false)
+    }
+
+    const onMouseOver = () => {
+        setEnableResumeHighlight(true)
+    }
+
+    const onMouseOut = () => {
+        setEnableResumeHighlight(false)
     }
 
     return (
@@ -166,9 +176,12 @@ export const StreamChat = () => {
             </div>
 
             {!autoScrollEnabled &&
-            <div style={Styles.autoScrollDiv} onClick={onClickAutoScroll}>
-                <span style={Styles.autoScrollSpan}>{Constants.chatPaused}</span>
-            </div>
+            <span style={{...Styles.autoScrollSpan, backgroundColor: enableResumeHighlight ? '#8C8C8C' : '#424242' }} 
+                onMouseOver={onMouseOver} 
+                onMouseOut={onMouseOut} 
+                onClick={onClickAutoScroll}>
+                {Constants.chatPaused}
+            </span>
             }
         </div>
     )
@@ -180,28 +193,30 @@ const Styles = {
         height: '100%'
     },
     headerDiv: {
-        backgroundColor: '#6383A5',
+        backgroundColor: '#4C6B6B',
         alignItems: 'center',
         zIndex: 100
     },
     headerSpan: {
         margin: '1%',
-        fontSize: 28
+        fontSize: 24
     },
     messagesDiv: {
         flex: 1,
         overflowY: 'scroll'
     },
-    autoScrollDiv: {
-        backgroundColor: '#F5BE52',
-        alignItems: 'center',
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0
-    },
     autoScrollSpan: {
-        margin: '1%',
-        fontSize: 28
+        display: 'inline-block',
+        borderColor: '#8C8C8C',
+        borderWidth: 3,
+        borderStyle: 'solid',
+        opacity: 0.85,
+        borderRadius: 8,
+        alignSelf: 'center',
+        position: 'absolute',
+        alignItems: 'center',
+        bottom: 16,
+        padding: '1.3%',
+        fontSize: 24
     }
 }
