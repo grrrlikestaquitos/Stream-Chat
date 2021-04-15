@@ -7,14 +7,28 @@ const BrowserWindow = electron.BrowserWindow;
 
 const path = require('path');
 const url = require('url');
+const Store = require('./src/util/store')
+
+const store = new Store({
+    configName: 'user-preferences',
+    defaults: {
+        windowBounds: { width: 800, height: 600 },
+        features: {
+            
+        }
+    }
+})
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
 function createWindow() {
+    // Get width and height from store
+    let { width, height } = store.get('windowBounds');
+
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 800, height: 600});
+    mainWindow = new BrowserWindow({ width, height });
 
     // Specify Path For URL
     const startUrl = process.env.ELECTRON_START_URL || url.format({
@@ -28,6 +42,15 @@ function createWindow() {
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
+
+    // On window resize
+    mainWindow.on('resize', () => {
+        // The event doesn't pass us the window size, so we call the `getBounds` method which returns an object with
+        // the height, width, and x and y coordinates.
+        let { width, height } = mainWindow.getBounds();
+        // Now that we have them, save them using the `set` method.
+        store.set('windowBounds', { width, height });
+      });
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {

@@ -1,7 +1,8 @@
 import { Client } from 'tmi.js'
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
+import SettingsLogo from '../images/settings-logo-2.svg'
 
 import '../css/App.css'
 
@@ -16,6 +17,7 @@ export const StreamChat = () => {
     const [messages, setMessages] = useState([])
     const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
     const [enableResumeHighlight, setEnableResumeHighlight] = useState(false)
+    const [showSettingsPage, setShowSettingsPage] = useState(false)
 
     // Refs
     const client = useRef(null)
@@ -114,9 +116,13 @@ export const StreamChat = () => {
         lastMessageRef.current = ref
     }
 
-    // Touch/UI Events 
+    // Touch/UI Events
+    const onClickSettings = () => {
+        setShowSettingsPage(!showSettingsPage)
+    }
+
     const onScroll = ({ target }) => {
-        const lastMessageHeight = 40
+        const lastMessageHeight = 60
         const currentScrollHeightFloor = target.scrollHeight - Math.floor(target.scrollTop)
         const currentScrollHeightCeil = target.scrollHeight - Math.ceil(target.scrollTop)
         const scrollTopDifference = currentScrollHeightCeil - target.clientHeight
@@ -152,37 +158,43 @@ export const StreamChat = () => {
 
     return (
         <div style={Styles.containerDiv}>
-            <div style={Styles.headerDiv}>
-                <span style={Styles.headerSpan}>{Constants.chatHeader}</span>
+            {showSettingsPage &&
+            <div style={{ flex: 0.4, backgroundColor: 'red' }}>
+            </div>}
+
+            <div style={Styles.chatContainerDiv}>
+                <div style={Styles.headerDiv}>
+                    <img style={Styles.settingsImg} src={SettingsLogo} onClick={onClickSettings}/>
+                    <span style={Styles.headerSpan}>{Constants.chatHeader}</span>
+                </div>
+
+                <div style={Styles.messagesDiv} onScroll={onScroll}>
+                    {messages.map((messageObj, index, readOnlyArray) => {
+                        const { username, timestamp, message } = messageObj
+                        const isMostRecentMessage = !!(readOnlyArray.length - 1 === index)
+
+                        return (
+                            <StreamMessage
+                                key={username + message + index}
+                                username={username}
+                                timestamp={timestamp}
+                                message={message}
+                                usernameColors={usernameColors.current}
+                                isMostRecentMessage={isMostRecentMessage}
+                                getLastMessageRef={getLastMessageRef}
+                            />
+                        )
+                    })}
+                </div>
+
+                {!autoScrollEnabled &&
+                <span style={{...Styles.autoScrollSpan, backgroundColor: enableResumeHighlight ? '#8C8C8C' : '#424242' }} 
+                    onMouseOver={onMouseOver} 
+                    onMouseOut={onMouseOut} 
+                    onClick={onClickAutoScroll}>
+                    {Constants.chatPaused}
+                </span>}
             </div>
-
-            <div style={Styles.messagesDiv} onScroll={onScroll}>
-                {messages.map((messageObj, index, readOnlyArray) => {
-                    const { username, timestamp, message } = messageObj
-                    const isMostRecentMessage = !!(readOnlyArray.length - 1 === index)
-
-                    return (
-                        <StreamMessage
-                            key={username + message + index}
-                            username={username}
-                            timestamp={timestamp}
-                            message={message}
-                            usernameColors={usernameColors.current}
-                            isMostRecentMessage={isMostRecentMessage}
-                            getLastMessageRef={getLastMessageRef}
-                        />
-                    )
-                })}
-            </div>
-
-            {!autoScrollEnabled &&
-            <span style={{...Styles.autoScrollSpan, backgroundColor: enableResumeHighlight ? '#8C8C8C' : '#424242' }} 
-                onMouseOver={onMouseOver} 
-                onMouseOut={onMouseOut} 
-                onClick={onClickAutoScroll}>
-                {Constants.chatPaused}
-            </span>
-            }
         </div>
     )
 }
@@ -190,12 +202,24 @@ export const StreamChat = () => {
 const Styles = {
     containerDiv: {
         width: '100%',
-        height: '100%'
+        height: '100%',
+        flexDirection: 'row'
+    },
+    chatContainerDiv: {
+        flex: 1
     },
     headerDiv: {
         backgroundColor: '#4C6B6B',
         alignItems: 'center',
         zIndex: 100
+    },
+    settingsImg: {
+        position: 'absolute',
+        alignSelf: 'flex-start',
+        margin: '1%',
+        height: 30,
+        fill: 'red',
+        aspectRatio: 1
     },
     headerSpan: {
         margin: '1%',
