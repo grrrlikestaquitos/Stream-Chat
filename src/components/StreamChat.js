@@ -2,9 +2,11 @@ import { Client } from 'tmi.js'
 import { useEffect, useState, useRef } from 'react'
 import { getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
+import { StreamSettings } from './StreamSettings'
 import SettingsLogo from '../images/settings-logo-2.svg'
 
 import '../css/App.css'
+import { StreamHeader } from './StreamHeader'
 
 const Constants = {
     chatHeader: 'Chat',
@@ -158,15 +160,14 @@ export const StreamChat = () => {
 
     return (
         <div style={Styles.containerDiv}>
-            {showSettingsPage &&
-            <div style={{ flex: 0.4, backgroundColor: 'red' }}>
-            </div>}
+            {showSettingsPage && <StreamSettings/>}
 
             <div style={Styles.chatContainerDiv}>
-                <div style={Styles.headerDiv}>
+
+                <StreamHeader color={'#4C6B6B'}>
                     <img style={Styles.settingsImg} src={SettingsLogo} onClick={onClickSettings}/>
                     <span style={Styles.headerSpan}>{Constants.chatHeader}</span>
-                </div>
+                </StreamHeader>
 
                 <div style={Styles.messagesDiv} onScroll={onScroll}>
                     {messages.map((messageObj, index, readOnlyArray) => {
@@ -208,21 +209,16 @@ const Styles = {
     chatContainerDiv: {
         flex: 1
     },
-    headerDiv: {
-        backgroundColor: '#4C6B6B',
-        alignItems: 'center',
-        zIndex: 100
-    },
     settingsImg: {
         position: 'absolute',
         alignSelf: 'flex-start',
-        margin: '1%',
+        margin: 8,
         height: 30,
         fill: 'red',
         aspectRatio: 1
     },
     headerSpan: {
-        margin: '1%',
+        margin: 8,
         fontSize: 24
     },
     messagesDiv: {

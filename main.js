@@ -1,34 +1,44 @@
 // Credits to: https://www.freecodecamp.org/news/building-an-electron-application-with-create-react-app-97945861647c/
-const electron = require('electron');
+const electron = require('electron')
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
-const path = require('path');
-const url = require('url');
-const Store = require('./src/util/store')
+const path = require('path')
+const url = require('url')
+const Store = require('electron-store')
+const Config = require('./src/config')
 
 const store = new Store({
-    configName: 'user-preferences',
     defaults: {
         windowBounds: { width: 800, height: 600 },
+        username: undefined,
         features: {
-            
+            enableTimestamps: true,
+            consecutiveMessageMerging: true,
+            messageLimit: 50,
+            viewerColorReferenceInChat: true
         }
     }
 })
 
+// store.initRenderer()
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
 function createWindow() {
     // Get width and height from store
-    let { width, height } = store.get('windowBounds');
+    let { width, height } = store.get();
 
     // Create the browser window.
-    mainWindow = new BrowserWindow({ width, height });
+    mainWindow = new BrowserWindow({ width, height, 
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        }
+    });
 
     // Specify Path For URL
     const startUrl = process.env.ELECTRON_START_URL || url.format({
@@ -49,7 +59,7 @@ function createWindow() {
         // the height, width, and x and y coordinates.
         let { width, height } = mainWindow.getBounds();
         // Now that we have them, save them using the `set` method.
-        store.set('windowBounds', { width, height });
+        store.set(Config.windowBounds, { width, height });
       });
 
     // Emitted when the window is closed.
