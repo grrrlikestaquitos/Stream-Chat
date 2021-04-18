@@ -61,7 +61,7 @@ const SettingsFeature = ({ keyId, title, type }) => {
                 </div>
             }
             {isEditableFeature &&
-                <input style={{ width: 50, height: 25 }} type={'number'} value={currentNumber} onChange={onChange}/>
+                <input style={Styles.featureInput} type={'number'} value={currentNumber} onChange={onChange}/>
             }
         </div>
     )
@@ -81,14 +81,17 @@ export const StreamSettings = () => {
                 <span style={Styles.headerSpan}>{Constants.header}</span>
             </StreamHeader>
 
-            {listOfFeatures.map((feature) => {
-                const { key, title, type } = feature
-                return (
-                    <div key={key}>
-                        <SettingsFeature keyId={key} type={type} title={title}/>
-                    </div>
-                )
-            })}
+
+            <div style={{ overflowY: 'scroll' }}>
+                {listOfFeatures.map((feature) => {
+                    const { key, title, type } = feature
+                    return (
+                        <div key={key}>
+                            <SettingsFeature keyId={key} type={type} title={title}/>
+                        </div>
+                    )
+                })}
+            </div>
         </div>
     )
 }
@@ -116,6 +119,10 @@ const Styles = {
         fontSize: 20,
         paddingRight: 10,
         color: '#ECECEC'
+    },
+    featureInput: {
+        width: 50,
+        height: 25
     },
     toggleDiv: {
         flexGrow: 0,
