@@ -12,14 +12,12 @@ const Config = require('./src/config')
 
 const store = new Store({
     defaults: {
-        windowBounds: { width: 800, height: 600 },
-        username: undefined,
-        features: {
-            enableTimestamps: true,
-            consecutiveMessageMerging: true,
-            messageLimit: 50,
-            viewerColorReferenceInChat: true
-        }
+        [Config.windowBounds.key]: { width: 800, height: 600 },
+        [Config.username.key]: undefined,
+        [Config.features.enableTimestamps.key]: true,
+        [Config.features.consecutiveMessageMerging.key]: true,
+        [Config.features.messageLimit.key]: 50,
+        [Config.features.viewerColorReferenceInChat.key]: true
     }
 })
 
@@ -30,7 +28,7 @@ let mainWindow;
 
 function createWindow() {
     // Get width and height from store
-    let { width, height } = store.get();
+    let { width, height } = store.get(Config.windowBounds.key);
 
     // Create the browser window.
     mainWindow = new BrowserWindow({ width, height, 
@@ -59,7 +57,7 @@ function createWindow() {
         // the height, width, and x and y coordinates.
         let { width, height } = mainWindow.getBounds();
         // Now that we have them, save them using the `set` method.
-        store.set(Config.windowBounds, { width, height });
+        store.set(Config.windowBounds.key, { width, height });
       });
 
     // Emitted when the window is closed.
