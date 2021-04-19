@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Config from '../config'
 import { StreamHeader } from './StreamHeader'
 import TwitchLogo from '../images/twitch-logo-purple.svg'
@@ -9,36 +9,61 @@ const store = new Store()
 
 const Constants = {
     header: 'Settings',
-    usernamePlaceHolder: 'Type your username'
+    usernamePlaceHolder: 'Type Your Username',
+    connect: 'Connect',
+    connected: 'Already Connected'
 }
 
 const SettingsUserName = () => {
     const storedUsername = store.get(Config.username.key)
     const [userName, setUserName] = useState(storedUsername)
+    const [isButtonHighlighted, setIsButtonHighlighted] = useState(false)
+
+    const onMouseOver = () => {
+        setIsButtonHighlighted(true)
+    }
+
+    const onMouseOut = () => {
+        setIsButtonHighlighted(false)
+    }
 
     const onChange = (event) => {
         const text = event.target.value
         setUserName(text)
     }
 
-    const isButtonDisabled = () => {
-        // Check if strings match 
-    }
+    const onClick = useCallback(() => {
+        if (isButtonEnabled()) {
+            console.log(userName)
+        }
+    }, [userName])
+
+    const isButtonEnabled = useCallback(() => {
+        if (storedUsername !== userName) { // Username has changed
+            return true
+        }
+        return false
+    }, [userName])
+
+    const buttonStyle = isButtonEnabled() ? Styles.usernameConnectButton : {}
+    const highlightedStyle = isButtonHighlighted && isButtonEnabled() && { backgroundColor: '#E0E0E0' }
 
     return (
-        <div style={{ height: 120, flexShrink: 0, alignItems: 'center', justifyContent: 'center', backgroundColor: '#484F59' }}>
-            <div style={{ flexDirection: 'row' }}>
+        <div style={Styles.usernameContainerDiv}>
+            <div style={Styles.usernameInputDiv}>
                 <input
-                    style={{ fontSize: 18, color: '#B483FE', alignItems: 'center', backgroundColor: 'transparent', border: 'none', outline: 'none' }}
+                    style={Styles.usernameInput}
                     type={'text'}
                     value={userName}
                     placeholder={Constants.usernamePlaceHolder}
                     onChange={onChange}/>
                 <img style={{ height: 26 }} src={TwitchLogo}/>
             </div>
-            <hr style={{ width: '90%'}}/>
-            <button disabled={false}>
-                <span>Hello</span>
+
+            <hr style={{ width: '90%' }}/>
+
+            <button style={{...Styles.usernameButton, ...highlightedStyle }} onMouseOver={onMouseOver} onMouseOut={onMouseOut} onClick={onClick} disabled={!isButtonEnabled()}>
+                <span style={{ fontSize: 16 }}>{Constants.connect}</span>
             </button>
         </div>
     )
@@ -132,6 +157,37 @@ const Styles = {
         margin: 8,
         fontSize: 24
     },
+    usernameContainerDiv: {
+        height: 120,
+        flexShrink: 0,
+        justifyContent: 'center',
+        backgroundColor: '#484F59'
+    },
+    usernameInputDiv: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingLeft: 12,
+        paddingRight: 12
+    },
+    usernameInput: {
+        fontSize: 18,
+        color: '#B483FE',
+        backgroundColor: 'transparent',
+        border: 'none',
+        outline: 'none'
+    },
+    usernameButton: {
+        width: '60%',
+        alignSelf: 'center',
+        borderRadius: 4,
+        outline: 'none',
+        border: 'none',
+        padding: 8
+    },
+    usernameConnected: {
+
+    },
     featureDiv: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -149,7 +205,8 @@ const Styles = {
     },
     featureInput: {
         width: 50,
-        height: 25
+        height: 25,
+        outline: 'none'
     },
     toggleDiv: {
         flexGrow: 0,

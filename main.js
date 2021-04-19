@@ -31,7 +31,9 @@ function createWindow() {
     let { width, height } = store.get(Config.windowBounds.key);
 
     // Create the browser window.
-    mainWindow = new BrowserWindow({ width, height, 
+    mainWindow = new BrowserWindow({ 
+        width, height,
+        transparent: true,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
