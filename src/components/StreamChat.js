@@ -143,16 +143,12 @@ export const StreamChat = () => {
         const newMessageList = [...messagesRef.current]
         const lastMessageInList = newMessageList[newMessageList.length - 1]
 
-        console.log(showMergedMessagesRef.current)
-
         if (lastMessageInList !== undefined && lastMessageInList.username === username && showMergedMessagesRef.current) { // Most recent user sent another message
             lastMessageInList.message += '\\n' + message
             lastMessageInList.timestamp = timestamp
         } else {
             newMessageList.push(newMessage)
         }
-
-        newMessageList.length > messageLimitRef.current && newMessageList.shift()
 
         lastMessageTimestamp.current = Date.now()
         setMessages(newMessageList)
@@ -202,6 +198,15 @@ export const StreamChat = () => {
         setEnableResumeHighlight(false)
     }
 
+    const slicedMessages = () => {
+        if (messagesRef.current.length <= messageLimitRef.current) {
+            return messagesRef.current
+        }
+        const start = (messagesRef.current.length - 1) - (messageLimitRef.current - 1)
+        const end = messagesRef.current.length
+        return messagesRef.current.slice(start, end)
+    }
+
     return (
         <div style={Styles.containerDiv}>
             {showSettingsPage && <StreamSettings/>}
@@ -225,7 +230,8 @@ export const StreamChat = () => {
                 }
 
                 <div style={Styles.messagesDiv} onScroll={onScroll}>
-                    {messages.map((messageObj, index, readOnlyArray) => {
+                    {slicedMessages()
+                        .map((messageObj, index, readOnlyArray) => {
                         const { username, timestamp, message } = messageObj
                         const isMostRecentMessage = !!(readOnlyArray.length - 1 === index)
 
