@@ -12,9 +12,9 @@ A Stream Chat for Twitch - built with React
   - Persistent User Settings
   - (Enable/Disable Features: Message merging, mention coloring)
 - On Launch Ask Username
+- Limit Number Of Saved Messages (Default 50)
 
 ## Requested Features
-- Limit Number Of Saved Messages (Default 50)
 - Animations (Fade In, Slide, Spring)
 - Censorship/Filtering/Replace Messages
 - Chat count

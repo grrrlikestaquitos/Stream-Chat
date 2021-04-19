@@ -13,11 +13,11 @@ const Config = require('./src/config')
 const store = new Store({
     defaults: {
         [Config.windowBounds.key]: { width: 800, height: 600 },
-        [Config.username.key]: undefined,
-        [Config.features.enableTimestamps.key]: true,
-        [Config.features.consecutiveMessageMerging.key]: true,
-        [Config.features.messageLimit.key]: 50,
-        [Config.features.viewerColorReferenceInChat.key]: true
+        [Config.username.key]: '',
+        [Config.enableTimestamps.key]: true,
+        [Config.consecutiveMessageMerging.key]: true,
+        [Config.messageLimit.key]: 50,
+        [Config.viewerColorReferenceInChat.key]: true
     }
 })
 

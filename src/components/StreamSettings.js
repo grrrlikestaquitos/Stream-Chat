@@ -1,19 +1,45 @@
 import { useState } from 'react'
 import Config from '../config'
 import { StreamHeader } from './StreamHeader'
+import TwitchLogo from '../images/twitch-logo-purple.svg'
 import '../css/App.css'
 
 const Store = window.require('electron-store')
 const store = new Store()
 
 const Constants = {
-    header: 'Settings'
+    header: 'Settings',
+    usernamePlaceHolder: 'Type your username'
 }
 
 const SettingsUserName = () => {
+    const storedUsername = store.get(Config.username.key)
+    const [userName, setUserName] = useState(storedUsername)
+
+    const onChange = (event) => {
+        const text = event.target.value
+        setUserName(text)
+    }
+
+    const isButtonDisabled = () => {
+        // Check if strings match 
+    }
+
     return (
-        <div>
-            <input/>
+        <div style={{ height: 120, flexShrink: 0, alignItems: 'center', justifyContent: 'center', backgroundColor: '#484F59' }}>
+            <div style={{ flexDirection: 'row' }}>
+                <input
+                    style={{ fontSize: 18, color: '#B483FE', alignItems: 'center', backgroundColor: 'transparent', border: 'none', outline: 'none' }}
+                    type={'text'}
+                    value={userName}
+                    placeholder={Constants.usernamePlaceHolder}
+                    onChange={onChange}/>
+                <img style={{ height: 26 }} src={TwitchLogo}/>
+            </div>
+            <hr style={{ width: '90%'}}/>
+            <button disabled={false}>
+                <span>Hello</span>
+            </button>
         </div>
     )
 }
@@ -81,8 +107,9 @@ export const StreamSettings = () => {
                 <span style={Styles.headerSpan}>{Constants.header}</span>
             </StreamHeader>
 
-
             <div style={{ overflowY: 'scroll' }}>
+                <SettingsUserName/>
+
                 {listOfFeatures.map((feature) => {
                     const { key, title, type } = feature
                     return (
