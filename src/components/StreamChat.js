@@ -4,14 +4,10 @@ import { getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
 import { StreamSettings } from './StreamSettings'
 import SettingsLogo from '../images/settings-logo-2.svg'
+import Constants from '../util/constants'
 
 import '../css/App.css'
 import { StreamHeader } from './StreamHeader'
-
-const Constants = {
-    chatHeader: 'Chat',
-    chatPaused: 'Chat Paused'
-}
 
 export const StreamChat = () => {
     // State
@@ -166,7 +162,7 @@ export const StreamChat = () => {
 
                 <StreamHeader color={'#4C6B6B'}>
                     <img style={Styles.settingsImg} src={SettingsLogo} onClick={onClickSettings}/>
-                    <span style={Styles.headerSpan}>{Constants.chatHeader}</span>
+                    <span style={Styles.headerSpan}>{Constants.chat.chatHeader}</span>
                 </StreamHeader>
 
                 <div style={Styles.messagesDiv} onScroll={onScroll}>
@@ -193,7 +189,7 @@ export const StreamChat = () => {
                     onMouseOver={onMouseOver} 
                     onMouseOut={onMouseOut} 
                     onClick={onClickAutoScroll}>
-                    {Constants.chatPaused}
+                    {Constants.chat.chatPaused}
                 </span>}
             </div>
         </div>
