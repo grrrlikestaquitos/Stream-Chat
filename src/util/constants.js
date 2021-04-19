@@ -12,5 +12,6 @@ export default {
     },
     settings: {
         header: 'Settings',
+        resetSettings: 'Reset Settings'
     }
 }

@@ -27,7 +27,7 @@ export const StreamUserInput = () => {
 
     const onClick = useCallback(() => {
         if (isButtonEnabled()) {
-            console.log(userName)
+            store.set(config.username.key, userName)
         }
     }, [userName])
 

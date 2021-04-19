@@ -23,12 +23,11 @@ export const StreamSettingsFeature = ({ keyId, title, type }) => {
     const isEditableFeature = type === 'number'
 
     useEffect(() => {
-        const unsubscribe = store.onDidChange(keyId, () => {
-            isToggableFeature && !highlightFeatureRef.current && setToggleEnabled(storedValue)
-            isEditableFeature && !highlightFeatureRef.current && setCurrentNumber(storedValue)
+        const unsubscribe = store.onDidChange(keyId, (newValue) => {
+            isToggableFeature && !highlightFeatureRef.current && setToggleEnabled(newValue)
+            isEditableFeature && !highlightFeatureRef.current && setCurrentNumber(newValue)
         })
         return () => {
-            console.log('feature will unmount')
             unsubscribe()
         }
     }, [])

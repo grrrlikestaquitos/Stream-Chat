@@ -1,4 +1,3 @@
-import { useCallback, useState } from 'react'
 import { StreamHeader } from './StreamHeader'
 import { StreamUserInput } from './StreamUserInput'
 import { StreamSettingsFeature } from './StreamSettingsFeature'
@@ -9,7 +8,6 @@ import '../css/App.css'
 const { config } = Config
 
 export const StreamSettings = () => {
-
     const listOfFeatures = [
         config.enableTimestamps,
         config.consecutiveMessageMerging,
@@ -40,7 +38,7 @@ export const StreamSettings = () => {
                 })}
 
                 <button style={Styles.resetButton} onClick={onClickResetButton}>
-                    <label style={Styles.resetLabel}>Reset Settings</label>
+                    <span style={Styles.resetLabel}>{Constants.settings.resetSettings}</span>
                 </button>
             </div>
         </div>
@@ -59,10 +57,12 @@ const Styles = {
     resetButton: {
         alignSelf: 'center',
         width: '80%',
-        backgroundColor: 'tranparent',
+        backgroundColor: 'white',
         outline: 'none',
         border: 'none',
-        borderRadius: 5
+        borderRadius: 5,
+        marginTop: 10,
+        padding: 8
     },
     resetLabel: {
         fontSize: 16

@@ -52,6 +52,15 @@ export const StreamChat = () => {
     }, [])
 
     useEffect(() => {
+        const unsubscribe = store.onDidChange(config.username.key, (newUsername) => {
+            setUserName(newUsername)
+        })
+        return () => {
+            unsubscribe()
+        }
+    }, [])
+
+    useEffect(() => {
         autoScrollEnabled && scrollToBottom()
     }, [messages])
 
