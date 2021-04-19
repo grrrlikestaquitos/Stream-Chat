@@ -1,16 +1,24 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import TwitchLogo from '../images/twitch-logo-purple.svg'
-import Config from '../config'
+import { config } from '../config'
 import Constants from '../util/constants'
 import { RendererStore as store } from '../util/rendere-store'
 import '../css/App.css'
-
-const { config } = Config
 
 export const StreamUserInput = () => {
     const storedUsername = store.get(config.username.key)
     const [userName, setUserName] = useState(storedUsername)
     const [isButtonHighlighted, setIsButtonHighlighted] = useState(false)
+
+    useEffect(() => {
+        const unsubscribeUserName = store.onDidChange(config.username.key, (newUserNameValue) => {
+            setUserName(newUserNameValue)
+        })
+
+        return () => {
+            unsubscribeUserName()
+        }
+    }, [])
 
     const onMouseOver = () => {
         setIsButtonHighlighted(true)
