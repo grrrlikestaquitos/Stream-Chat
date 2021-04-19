@@ -3,19 +3,27 @@ import { useEffect, useState, useRef } from 'react'
 import { getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
 import { StreamSettings } from './StreamSettings'
+import { StreamHeader } from './StreamHeader'
 import SettingsLogo from '../images/settings-logo-2.svg'
 import Constants from '../util/constants'
-
+import Config from '../config'
 import '../css/App.css'
-import { StreamHeader } from './StreamHeader'
+const { config } = Config
+
+
+const Store = window.require('electron-store')
+const store = new Store()
 
 export const StreamChat = () => {
+    const storedUsername = store.get(config.username.key)
+
     // State
     const [rerenderUI, setRerenderUI] = useState(false)
     const [messages, setMessages] = useState([])
     const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
     const [enableResumeHighlight, setEnableResumeHighlight] = useState(false)
     const [showSettingsPage, setShowSettingsPage] = useState(false)
+    const [userName, setUserName] = useState(storedUsername)
 
     // Refs
     const client = useRef(null)
@@ -165,6 +173,17 @@ export const StreamChat = () => {
                     <span style={Styles.headerSpan}>{Constants.chat.chatHeader}</span>
                 </StreamHeader>
 
+                {!userName &&
+                <div style={Styles.requireUsernameDiv}>
+                    <span style={Styles.requireUsernameSpan}>
+                        {Constants.chat.requireUsername1}
+                        <br/>
+                        <br/>
+                        {Constants.chat.requireUsername2}
+                    </span>
+                </div>
+                }
+
                 <div style={Styles.messagesDiv} onScroll={onScroll}>
                     {messages.map((messageObj, index, readOnlyArray) => {
                         const { username, timestamp, message } = messageObj
@@ -234,5 +253,16 @@ const Styles = {
         bottom: 16,
         padding: '1.3%',
         fontSize: 24
+    },
+    requireUsernameDiv: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 50
+    },
+    requireUsernameSpan: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        width: '70%',
+        textAlign: 'center'
     }
 }

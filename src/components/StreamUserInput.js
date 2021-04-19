@@ -4,11 +4,12 @@ import Config from '../config'
 import Constants from '../util/constants'
 import '../css/App.css'
 
+const { config } = Config
 const Store = window.require('electron-store')
 const store = new Store()
 
 export const StreamUserInput = () => {
-    const storedUsername = store.get(Config.username.key)
+    const storedUsername = store.get(config.username.key)
     const [userName, setUserName] = useState(storedUsername)
     const [isButtonHighlighted, setIsButtonHighlighted] = useState(false)
 
@@ -38,7 +39,6 @@ export const StreamUserInput = () => {
         return false
     }, [userName])
 
-    const buttonStyle = isButtonEnabled() ? Styles.usernameConnectButton : {}
     const highlightedStyle = isButtonHighlighted && isButtonEnabled() && { backgroundColor: '#E0E0E0' }
 
     return (
@@ -55,7 +55,11 @@ export const StreamUserInput = () => {
 
             <hr style={{ width: '90%' }}/>
 
-            <button style={{...Styles.usernameButton, ...highlightedStyle }} onMouseOver={onMouseOver} onMouseOut={onMouseOut} onClick={onClick} disabled={!isButtonEnabled()}>
+            <button
+                style={{...Styles.usernameButton, ...highlightedStyle }}
+                onMouseOver={onMouseOver}
+                onMouseOut={onMouseOut} onClick={onClick}
+                disabled={!isButtonEnabled()}>
                 <span style={{ fontSize: 16 }}>{Constants.userInput.connect}</span>
             </button>
         </div>

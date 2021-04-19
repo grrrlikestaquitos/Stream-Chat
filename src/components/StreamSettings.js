@@ -1,69 +1,26 @@
 import { useState } from 'react'
-import Config from '../config'
 import { StreamHeader } from './StreamHeader'
 import { StreamUserInput } from './StreamUserInput'
-import '../css/App.css'
+import { StreamSettingsFeature } from './StreamSettingsFeature'
 import Constants from '../util/constants'
+import Config from '../config'
+import '../css/App.css'
+const { config } = Config
 
 const Store = window.require('electron-store')
 const store = new Store()
 
-const SettingsFeature = ({ keyId, title, type }) => {
-    const storedValue = store.get(keyId)
-
-    const [toggleEnabled, setToggleEnabled] = useState(storedValue)
-    const [currentNumber, setCurrentNumber] = useState(storedValue)
-    const [highlightFeature, setHighlightFeature] = useState(false)
-
-    const backgroundColor = toggleEnabled ? '#2BD853': '#EA5555'
-    const alignItems = toggleEnabled ? 'flex-end' : 'flex-start'
-    const highlightedBackground = highlightFeature ? '#545454' : 'transparent'
-
-    const isToggableFeature = type === 'boolean'
-    const isEditableFeature = type === 'number'
-
-    const onMouseOver = () => {
-        setHighlightFeature(true)
-    }
-
-    const onMouseOut = () => {
-        setHighlightFeature(false)
-    }
-
-    const onClick = () => {
-        setToggleEnabled(!toggleEnabled)
-        store.set(keyId, !toggleEnabled)
-    }
-
-    const onChange = (event) => {
-        const value = event.target.value
-        setCurrentNumber(value)
-        store.set(keyId, value)
-    }
-
-    return (
-        <div style={{ ...Styles.featureDiv, backgroundColor: highlightedBackground }} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
-            <span style={Styles.featureTitleSpan}>{title}</span>
-
-            {isToggableFeature &&
-                <div style={{ ...Styles.toggleDiv, backgroundColor, alignItems }} onClick={onClick}>
-                    <div style={Styles.toggleBubbleDiv}/>
-                </div>
-            }
-            {isEditableFeature &&
-                <input style={Styles.featureInput} type={'number'} value={currentNumber} onChange={onChange}/>
-            }
-        </div>
-    )
-}
-
 export const StreamSettings = () => {
     const listOfFeatures = [
-        Config.enableTimestamps,
-        Config.consecutiveMessageMerging,
-        Config.viewerColorReferenceInChat,
-        Config.messageLimit
+        config.enableTimestamps,
+        config.consecutiveMessageMerging,
+        config.viewerColorReferenceInChat,
+        config.messageLimit
     ]
+
+    const onClickResetButton = () => {
+        store.clear()
+    }
 
     return (
         <div style={Styles.containerDiv}>
@@ -71,17 +28,21 @@ export const StreamSettings = () => {
                 <span style={Styles.headerSpan}>{Constants.settings.header}</span>
             </StreamHeader>
 
-            <div style={{ overflowY: 'scroll' }}>
+            <div style={{ overflowY: 'scroll', paddingBottom: 50 }}>
                 <StreamUserInput/>
 
                 {listOfFeatures.map((feature) => {
                     const { key, title, type } = feature
                     return (
                         <div key={key}>
-                            <SettingsFeature keyId={key} type={type} title={title}/>
+                            <StreamSettingsFeature keyId={key} type={type} title={title}/>
                         </div>
                     )
                 })}
+
+                <button style={Styles.resetButton} onClick={onClickResetButton}>
+                    <label style={Styles.resetLabel}>Reset Settings</label>
+                </button>
             </div>
         </div>
     )
@@ -96,39 +57,15 @@ const Styles = {
         margin: 8,
         fontSize: 24
     },
-    featureDiv: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingTop: 16,
-        paddingBottom: 16
+    resetButton: {
+        alignSelf: 'center',
+        width: '80%',
+        backgroundColor: 'tranparent',
+        outline: 'none',
+        border: 'none',
+        borderRadius: 5
     },
-    featureTitleSpan: {
-        flex: 1,
-        fontSize: 20,
-        paddingRight: 10,
-        color: '#ECECEC'
-    },
-    featureInput: {
-        width: 50,
-        height: 25,
-        outline: 'none'
-    },
-    toggleDiv: {
-        flexGrow: 0,
-        justifyContent: 'center',
-        width: 50,
-        height: 28,
-        borderRadius: 15,
-    },
-    toggleBubbleDiv: {
-        backgroundColor: 'white',
-        width: 20.5,
-        height: 20.5,
-        borderRadius: 10,
-        marginLeft: 4,
-        marginRight: 4
+    resetLabel: {
+        fontSize: 16
     }
 }

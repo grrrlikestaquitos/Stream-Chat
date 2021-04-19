@@ -8,18 +8,9 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require('path')
 const url = require('url')
 const Store = require('electron-store')
-const Config = require('./src/config')
+const { defaults, config } = require('./src/config')
 
-const store = new Store({
-    defaults: {
-        [Config.windowBounds.key]: { width: 800, height: 600 },
-        [Config.username.key]: '',
-        [Config.enableTimestamps.key]: true,
-        [Config.consecutiveMessageMerging.key]: true,
-        [Config.messageLimit.key]: 50,
-        [Config.viewerColorReferenceInChat.key]: true
-    }
-})
+const store = new Store({ defaults })
 
 // store.initRenderer()
 // Keep a global reference of the window object, if you don't, the window will
@@ -28,7 +19,7 @@ let mainWindow;
 
 function createWindow() {
     // Get width and height from store
-    let { width, height } = store.get(Config.windowBounds.key);
+    let { width, height } = store.get(config.windowBounds.key);
 
     // Create the browser window.
     mainWindow = new BrowserWindow({ 
@@ -59,7 +50,7 @@ function createWindow() {
         // the height, width, and x and y coordinates.
         let { width, height } = mainWindow.getBounds();
         // Now that we have them, save them using the `set` method.
-        store.set(Config.windowBounds.key, { width, height });
+        store.set(config.windowBounds.key, { width, height });
       });
 
     // Emitted when the window is closed.
