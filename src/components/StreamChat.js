@@ -23,6 +23,7 @@ export const StreamChat = () => {
     const [showSettingsPage, setShowSettingsPage] = useState(false)
     const [userName, setUserName] = useState(storedUsername)
     const [showMergedMessages, setShowMergedMessages] = useState(storedMessageMerging)
+    const [messageLimit, setMessageLimit] = useState(storedMessageLimit)
 
     // Refs
     const client = useRef(null)
@@ -35,11 +36,13 @@ export const StreamChat = () => {
     const rerenderUIRef = useRef(false)
     const autoScrollEnabledRef = useRef(true)
     const showMergedMessagesRef = useRef(storedMessageMerging)
+    const messageLimitRef = useRef(storedMessageLimit)
 
     messagesRef.current = messages
     rerenderUIRef.current = rerenderUI
     autoScrollEnabledRef.current = autoScrollEnabled
     showMergedMessagesRef.current = showMergedMessages
+    messageLimitRef.current = messageLimit
 
     // Use Effect
     useEffect(() => {
@@ -73,9 +76,14 @@ export const StreamChat = () => {
             setShowMergedMessages(newShowMessageMergeValue)
         })
 
+        const unsubscribeMessageLimit = store.onDidChange(config.messageLimit.key, (newMessageLimitValue) => {
+            setMessageLimit(newMessageLimitValue)
+        })
+
         return () => {
             unsubscribeUserName()
             unsubscribeMessageMerging()
+            unsubscribeMessageLimit()
         }
     }, [])
 
@@ -139,7 +147,7 @@ export const StreamChat = () => {
             newMessageList.push(newMessage)
         }
 
-        newMessageList.length > storedMessageLimit && newMessageList.shift()
+        newMessageList.length > messageLimitRef.current && newMessageList.shift()
 
         lastMessageTimestamp.current = Date.now()
         setMessages(newMessageList)
