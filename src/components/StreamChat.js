@@ -1,21 +1,29 @@
 import { Client } from 'tmi.js'
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
-
+import { StreamSettings } from './StreamSettings'
+import { StreamHeader } from './StreamHeader'
+import SettingsLogo from '../images/settings-logo-2.svg'
+import Constants from '../util/constants'
+import { config } from '../config'
+import { RendererStore as store } from '../util/rendere-store'
 import '../css/App.css'
 
-const Constants = {
-    chatHeader: 'Chat',
-    chatPaused: 'Chat Paused'
-}
-
 export const StreamChat = () => {
+    const storedUsername = store.get(config.username.key)
+    const storedMessageMerging = store.get(config.consecutiveMessageMerging.key)
+    const storedMessageLimit = store.get(config.messageLimit.key)
+
     // State
     const [rerenderUI, setRerenderUI] = useState(false)
     const [messages, setMessages] = useState([])
     const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
     const [enableResumeHighlight, setEnableResumeHighlight] = useState(false)
+    const [showSettingsPage, setShowSettingsPage] = useState(false)
+    const [userName, setUserName] = useState(storedUsername)
+    const [showMergedMessages, setShowMergedMessages] = useState(storedMessageMerging)
+    const [messageLimit, setMessageLimit] = useState(storedMessageLimit)
 
     // Refs
     const client = useRef(null)
@@ -27,10 +35,14 @@ export const StreamChat = () => {
     const messagesRef = useRef([])
     const rerenderUIRef = useRef(false)
     const autoScrollEnabledRef = useRef(true)
+    const showMergedMessagesRef = useRef(storedMessageMerging)
+    const messageLimitRef = useRef(storedMessageLimit)
 
     messagesRef.current = messages
     rerenderUIRef.current = rerenderUI
     autoScrollEnabledRef.current = autoScrollEnabled
+    showMergedMessagesRef.current = showMergedMessages
+    messageLimitRef.current = messageLimit
 
     // Use Effect
     useEffect(() => {
@@ -39,15 +51,49 @@ export const StreamChat = () => {
                 secure: true,
                 reconnect: true
             },
-            channels: ['grrrlikestaquitos']
+            channels: [userName]
         })
 
         connectAndListenToMessage()
         rerenderMessageList()
+
+        return () => {
+            client.current.disconnect()
+            setMessages([])
+        }
+    }, [userName])
+
+    useEffect(() => {
+        setMessages([])
+    }, [showMergedMessages])
+
+    useEffect(() => {
+        const unsubscribeUserName = store.onDidChange(config.username.key, (newUsernameValue) => {
+            setUserName(newUsernameValue)
+        })
+
+        const unsubscribeMessageMerging = store.onDidChange(config.consecutiveMessageMerging.key, (newShowMessageMergeValue) => {
+            setShowMergedMessages(newShowMessageMergeValue)
+        })
+
+        const unsubscribeMessageLimit = store.onDidChange(config.messageLimit.key, (newMessageLimitValue) => {
+            setMessageLimit(newMessageLimitValue)
+        })
+
+        const unsubscribeMessageTimestamps = store.onDidChange(config.enableTimestamps.key, () => {
+            setRerenderUI(!rerenderUIRef.current)
+        })
+
+        return () => {
+            unsubscribeUserName()
+            unsubscribeMessageMerging()
+            unsubscribeMessageLimit()
+            unsubscribeMessageTimestamps()
+        }
     }, [])
 
     useEffect(() => {
-        autoScrollEnabled && scrollToBottom()
+        autoScrollEnabled && messages.length > 0 && scrollToBottom()
     }, [messages])
 
     // Message Handling
@@ -97,14 +143,12 @@ export const StreamChat = () => {
         const newMessageList = [...messagesRef.current]
         const lastMessageInList = newMessageList[newMessageList.length - 1]
 
-        if (lastMessageInList !== undefined && lastMessageInList.username === username && false) { // Most recent user sent another message
+        if (lastMessageInList !== undefined && lastMessageInList.username === username && showMergedMessagesRef.current) { // Most recent user sent another message
             lastMessageInList.message += '\\n' + message
             lastMessageInList.timestamp = timestamp
         } else {
             newMessageList.push(newMessage)
         }
-
-        newMessageList.length > 50 && newMessageList.shift()
 
         lastMessageTimestamp.current = Date.now()
         setMessages(newMessageList)
@@ -114,9 +158,13 @@ export const StreamChat = () => {
         lastMessageRef.current = ref
     }
 
-    // Touch/UI Events 
+    // Touch/UI Events
+    const onClickSettings = () => {
+        setShowSettingsPage(!showSettingsPage)
+    }
+
     const onScroll = ({ target }) => {
-        const lastMessageHeight = 40
+        const lastMessageHeight = 60
         const currentScrollHeightFloor = target.scrollHeight - Math.floor(target.scrollTop)
         const currentScrollHeightCeil = target.scrollHeight - Math.ceil(target.scrollTop)
         const scrollTopDifference = currentScrollHeightCeil - target.clientHeight
@@ -150,39 +198,65 @@ export const StreamChat = () => {
         setEnableResumeHighlight(false)
     }
 
+    const slicedMessages = () => {
+        if (messagesRef.current.length <= messageLimitRef.current) {
+            return messagesRef.current
+        }
+        const start = (messagesRef.current.length - 1) - (messageLimitRef.current - 1)
+        const end = messagesRef.current.length
+        return messagesRef.current.slice(start, end)
+    }
+
     return (
         <div style={Styles.containerDiv}>
-            <div style={Styles.headerDiv}>
-                <span style={Styles.headerSpan}>{Constants.chatHeader}</span>
+            {showSettingsPage && <StreamSettings/>}
+
+            <div style={Styles.chatContainerDiv}>
+
+                <StreamHeader color={'#4C6B6B'}>
+                    <img style={Styles.settingsImg} src={SettingsLogo} onClick={onClickSettings}/>
+                    <span style={Styles.headerSpan}>{Constants.chat.chatHeader}</span>
+                </StreamHeader>
+
+                {!userName &&
+                <div style={Styles.requireUsernameDiv}>
+                    <span style={Styles.requireUsernameSpan}>
+                        {Constants.chat.requireUsername1}
+                        <br/>
+                        <br/>
+                        {Constants.chat.requireUsername2}
+                    </span>
+                </div>
+                }
+
+                <div style={Styles.messagesDiv} onScroll={onScroll}>
+                    {slicedMessages()
+                        .map((messageObj, index, readOnlyArray) => {
+                        const { username, timestamp, message } = messageObj
+                        const isMostRecentMessage = !!(readOnlyArray.length - 1 === index)
+
+                        return (
+                            <StreamMessage
+                                key={username + message + index}
+                                username={username}
+                                timestamp={timestamp}
+                                message={message}
+                                usernameColors={usernameColors.current}
+                                isMostRecentMessage={isMostRecentMessage}
+                                getLastMessageRef={getLastMessageRef}
+                            />
+                        )
+                    })}
+                </div>
+
+                {!autoScrollEnabled &&
+                <span style={{...Styles.autoScrollSpan, backgroundColor: enableResumeHighlight ? '#8C8C8C' : '#424242' }} 
+                    onMouseOver={onMouseOver} 
+                    onMouseOut={onMouseOut} 
+                    onClick={onClickAutoScroll}>
+                    {Constants.chat.chatPaused}
+                </span>}
             </div>
-
-            <div style={Styles.messagesDiv} onScroll={onScroll}>
-                {messages.map((messageObj, index, readOnlyArray) => {
-                    const { username, timestamp, message } = messageObj
-                    const isMostRecentMessage = !!(readOnlyArray.length - 1 === index)
-
-                    return (
-                        <StreamMessage
-                            key={username + message + index}
-                            username={username}
-                            timestamp={timestamp}
-                            message={message}
-                            usernameColors={usernameColors.current}
-                            isMostRecentMessage={isMostRecentMessage}
-                            getLastMessageRef={getLastMessageRef}
-                        />
-                    )
-                })}
-            </div>
-
-            {!autoScrollEnabled &&
-            <span style={{...Styles.autoScrollSpan, backgroundColor: enableResumeHighlight ? '#8C8C8C' : '#424242' }} 
-                onMouseOver={onMouseOver} 
-                onMouseOut={onMouseOut} 
-                onClick={onClickAutoScroll}>
-                {Constants.chatPaused}
-            </span>
-            }
         </div>
     )
 }
@@ -190,15 +264,22 @@ export const StreamChat = () => {
 const Styles = {
     containerDiv: {
         width: '100%',
-        height: '100%'
+        height: '100%',
+        flexDirection: 'row'
     },
-    headerDiv: {
-        backgroundColor: '#4C6B6B',
-        alignItems: 'center',
-        zIndex: 100
+    chatContainerDiv: {
+        flex: 1
+    },
+    settingsImg: {
+        position: 'absolute',
+        alignSelf: 'flex-start',
+        margin: 8,
+        height: 30,
+        fill: 'red',
+        aspectRatio: 1
     },
     headerSpan: {
-        margin: '1%',
+        margin: 8,
         fontSize: 24
     },
     messagesDiv: {
@@ -218,5 +299,16 @@ const Styles = {
         bottom: 16,
         padding: '1.3%',
         fontSize: 24
+    },
+    requireUsernameDiv: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 50
+    },
+    requireUsernameSpan: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        width: '70%',
+        textAlign: 'center'
     }
 }

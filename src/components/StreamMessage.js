@@ -1,5 +1,7 @@
 import { useCallback } from 'react'
+import { RendererStore as store } from '../util/rendere-store'
 import '../css/App.css'
+import { config } from '../config'
 
 // PROPS
 // username (string, required)
@@ -10,7 +12,15 @@ import '../css/App.css'
 // getLastMessageRef ((ref: HTMLRef) => void, optional)
 
 export const StreamMessage = ({ username, timestamp, message, usernameColors, isMostRecentMessage, getLastMessageRef }) => {
+    const showTimestamps = store.get(config.enableTimestamps.key)
+    const showUserColorMentions = store.get(config.viewerColorReferenceInChat.key)
+    const showMergedMessages = store.get(config.consecutiveMessageMerging.key)
+
     const getMessageTimestamp = (timestamp) => {
+        if (!showTimestamps) {
+            return
+        }
+
         // Check time difference in timestamp from now
         const differenceInTime = Date.now() - timestamp
 
@@ -30,7 +40,7 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
         const regex = new RegExp('@[^\s]+')
         const containsUserMention = regex.test(text)
 
-        if (containsUserMention && true) { // TODO: Setting to enable/disable feature
+        if (containsUserMention && showUserColorMentions) {
             const extractedUsername = text.substring(1).toLowerCase()
             return extractedUsername
         }
@@ -42,7 +52,7 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
         }
     }, [message])
 
-    const renderMessage = () => {
+    const renderMessage = useCallback(() => {
         const renderableMessageComponent = (text, index, readOnlyArray) => {
             const isLastItem = (readOnlyArray.length - 1) === index
 
@@ -52,7 +62,7 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
                 return <span key={username + subText + subIndex} style={{ fontSize: 28, color }}>{subText + ' '}</span>
             }
 
-            if (true) { // color mapping of usernames
+            if (showUserColorMentions) {
                 const arrayOfText = text.split(' ') // Split text if there is a white space
                 return (
                     <div key={username + text + index } style={Styles.subTextDiv} ref={isLastItem ? retrieveMessageRef : null}>
@@ -68,13 +78,13 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
             )
         }
 
-        if (false) { // should split messages if contains line break
+        if (showMergedMessages) { // should split messages if contains line break
             const mergedMessagesSplit = message.split(`\\n`)
             return mergedMessagesSplit.map(renderableMessageComponent)
         }
         
         return renderableMessageComponent(message, 0, [message])
-    }
+    }, [showUserColorMentions, showMergedMessages])
 
     const messageTimestamp = getMessageTimestamp(timestamp)
 

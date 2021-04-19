@@ -1,20 +1,35 @@
 // Credits to: https://www.freecodecamp.org/news/building-an-electron-application-with-create-react-app-97945861647c/
-const electron = require('electron');
+const electron = require('electron')
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
-const path = require('path');
-const url = require('url');
+const path = require('path')
+const url = require('url')
+const Store = require('electron-store')
+const { defaults, config } = require('./src/config')
 
+const store = new Store({ defaults })
+
+// store.initRenderer()
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
 function createWindow() {
+    // Get width and height from store
+    let { width, height } = store.get(config.windowBounds.key);
+
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 800, height: 600});
+    mainWindow = new BrowserWindow({ 
+        width, height,
+        transparent: true,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        }
+    });
 
     // Specify Path For URL
     const startUrl = process.env.ELECTRON_START_URL || url.format({
@@ -28,6 +43,15 @@ function createWindow() {
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
+
+    // On window resize
+    mainWindow.on('resize', () => {
+        // The event doesn't pass us the window size, so we call the `getBounds` method which returns an object with
+        // the height, width, and x and y coordinates.
+        let { width, height } = mainWindow.getBounds();
+        // Now that we have them, save them using the `set` method.
+        store.set(config.windowBounds.key, { width, height });
+      });
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
