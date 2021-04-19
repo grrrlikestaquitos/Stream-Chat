@@ -1,18 +1,19 @@
 import { Client } from 'tmi.js'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
 import { StreamSettings } from './StreamSettings'
 import { StreamHeader } from './StreamHeader'
 import SettingsLogo from '../images/settings-logo-2.svg'
 import Constants from '../util/constants'
-import Config from '../config'
+import { config } from '../config'
 import { RendererStore as store } from '../util/rendere-store'
 import '../css/App.css'
-const { config} = Config
 
 export const StreamChat = () => {
     const storedUsername = store.get(config.username.key)
+    const storedMessageMerging = store.get(config.consecutiveMessageMerging.key)
+    const storedMessageLimit = store.get(config.messageLimit.key)
 
     // State
     const [rerenderUI, setRerenderUI] = useState(false)
@@ -21,6 +22,7 @@ export const StreamChat = () => {
     const [enableResumeHighlight, setEnableResumeHighlight] = useState(false)
     const [showSettingsPage, setShowSettingsPage] = useState(false)
     const [userName, setUserName] = useState(storedUsername)
+    const [showMergedMessages, setShowMergedMessages] = useState(storedMessageMerging)
 
     // Refs
     const client = useRef(null)
@@ -32,10 +34,12 @@ export const StreamChat = () => {
     const messagesRef = useRef([])
     const rerenderUIRef = useRef(false)
     const autoScrollEnabledRef = useRef(true)
+    const showMergedMessagesRef = useRef(storedMessageMerging)
 
     messagesRef.current = messages
     rerenderUIRef.current = rerenderUI
     autoScrollEnabledRef.current = autoScrollEnabled
+    showMergedMessagesRef.current = showMergedMessages
 
     // Use Effect
     useEffect(() => {
@@ -57,11 +61,21 @@ export const StreamChat = () => {
     }, [userName])
 
     useEffect(() => {
-        const unsubscribe = store.onDidChange(config.username.key, (newUsername) => {
-            setUserName(newUsername)
+        setMessages([])
+    }, [showMergedMessages])
+
+    useEffect(() => {
+        const unsubscribeUserName = store.onDidChange(config.username.key, (newUsernameValue) => {
+            setUserName(newUsernameValue)
         })
+
+        const unsubscribeMessageMerging = store.onDidChange(config.consecutiveMessageMerging.key, (newShowMessageMergeValue) => {
+            setShowMergedMessages(newShowMessageMergeValue)
+        })
+
         return () => {
-            unsubscribe()
+            unsubscribeUserName()
+            unsubscribeMessageMerging()
         }
     }, [])
 
@@ -116,14 +130,16 @@ export const StreamChat = () => {
         const newMessageList = [...messagesRef.current]
         const lastMessageInList = newMessageList[newMessageList.length - 1]
 
-        if (lastMessageInList !== undefined && lastMessageInList.username === username && false) { // Most recent user sent another message
+        console.log(showMergedMessagesRef.current)
+
+        if (lastMessageInList !== undefined && lastMessageInList.username === username && showMergedMessagesRef.current) { // Most recent user sent another message
             lastMessageInList.message += '\\n' + message
             lastMessageInList.timestamp = timestamp
         } else {
             newMessageList.push(newMessage)
         }
 
-        newMessageList.length > 50 && newMessageList.shift()
+        newMessageList.length > storedMessageLimit && newMessageList.shift()
 
         lastMessageTimestamp.current = Date.now()
         setMessages(newMessageList)

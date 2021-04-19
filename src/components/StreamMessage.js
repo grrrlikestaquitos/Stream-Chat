@@ -52,7 +52,7 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
         }
     }, [message])
 
-    const renderMessage = () => {
+    const renderMessage = useCallback(() => {
         const renderableMessageComponent = (text, index, readOnlyArray) => {
             const isLastItem = (readOnlyArray.length - 1) === index
 
@@ -78,13 +78,13 @@ export const StreamMessage = ({ username, timestamp, message, usernameColors, is
             )
         }
 
-        if (false) { // should split messages if contains line break
+        if (showMergedMessages) { // should split messages if contains line break
             const mergedMessagesSplit = message.split(`\\n`)
             return mergedMessagesSplit.map(renderableMessageComponent)
         }
         
         return renderableMessageComponent(message, 0, [message])
-    }
+    }, [showUserColorMentions, showMergedMessages])
 
     const messageTimestamp = getMessageTimestamp(timestamp)
 
