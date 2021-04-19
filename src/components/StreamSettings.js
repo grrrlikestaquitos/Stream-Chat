@@ -1,16 +1,15 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { StreamHeader } from './StreamHeader'
 import { StreamUserInput } from './StreamUserInput'
 import { StreamSettingsFeature } from './StreamSettingsFeature'
 import Constants from '../util/constants'
 import Config from '../config'
+import { RendererStore as store } from '../util/rendere-store'
 import '../css/App.css'
 const { config } = Config
 
-const Store = window.require('electron-store')
-const store = new Store()
-
 export const StreamSettings = () => {
+
     const listOfFeatures = [
         config.enableTimestamps,
         config.consecutiveMessageMerging,

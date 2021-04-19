@@ -2,11 +2,10 @@ import { useCallback, useState } from 'react'
 import TwitchLogo from '../images/twitch-logo-purple.svg'
 import Config from '../config'
 import Constants from '../util/constants'
+import { RendererStore as store } from '../util/rendere-store'
 import '../css/App.css'
 
 const { config } = Config
-const Store = window.require('electron-store')
-const store = new Store()
 
 export const StreamUserInput = () => {
     const storedUsername = store.get(config.username.key)

@@ -7,12 +7,9 @@ import { StreamHeader } from './StreamHeader'
 import SettingsLogo from '../images/settings-logo-2.svg'
 import Constants from '../util/constants'
 import Config from '../config'
+import { RendererStore as store } from '../util/rendere-store'
 import '../css/App.css'
-const { config } = Config
-
-
-const Store = window.require('electron-store')
-const store = new Store()
+const { config} = Config
 
 export const StreamChat = () => {
     const storedUsername = store.get(config.username.key)
@@ -50,8 +47,8 @@ export const StreamChat = () => {
             channels: ['grrrlikestaquitos']
         })
 
-        connectAndListenToMessage()
-        rerenderMessageList()
+        // connectAndListenToMessage()
+        // rerenderMessageList()
     }, [])
 
     useEffect(() => {

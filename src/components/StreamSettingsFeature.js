@@ -1,24 +1,37 @@
-import { useState } from 'react'
-import Config from '../config'
+import { useState, useEffect, useRef } from 'react'
+import { RendererStore as store } from '../util/rendere-store'
 import '../css/App.css'
-const { config } = Config
-
-const Store = window.require('electron-store')
-const store = new Store()
 
 export const StreamSettingsFeature = ({ keyId, title, type }) => {
     const storedValue = store.get(keyId)
 
+    // State
     const [toggleEnabled, setToggleEnabled] = useState(storedValue)
     const [currentNumber, setCurrentNumber] = useState(storedValue)
     const [highlightFeature, setHighlightFeature] = useState(false)
 
+    // Refs dependant on state
+    const highlightFeatureRef = useRef(storedValue)
+    highlightFeatureRef.current = highlightFeature
+
+    // Computed properties
     const backgroundColor = toggleEnabled ? '#2BD853': '#EA5555'
     const alignItems = toggleEnabled ? 'flex-end' : 'flex-start'
     const highlightedBackground = highlightFeature ? '#545454' : 'transparent'
 
     const isToggableFeature = type === 'boolean'
     const isEditableFeature = type === 'number'
+
+    useEffect(() => {
+        const unsubscribe = store.onDidChange(keyId, () => {
+            isToggableFeature && !highlightFeatureRef.current && setToggleEnabled(storedValue)
+            isEditableFeature && !highlightFeatureRef.current && setCurrentNumber(storedValue)
+        })
+        return () => {
+            console.log('feature will unmount')
+            unsubscribe()
+        }
+    }, [])
 
     const onMouseOver = () => {
         setHighlightFeature(true)
