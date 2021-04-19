@@ -1,5 +1,5 @@
 import { Client } from 'tmi.js'
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { getRandomColor } from '../util/util'
 import { StreamMessage } from './StreamMessage'
 import { StreamSettings } from './StreamSettings'
@@ -80,10 +80,15 @@ export const StreamChat = () => {
             setMessageLimit(newMessageLimitValue)
         })
 
+        const unsubscribeMessageTimestamps = store.onDidChange(config.enableTimestamps.key, () => {
+            setRerenderUI(!rerenderUIRef.current)
+        })
+
         return () => {
             unsubscribeUserName()
             unsubscribeMessageMerging()
             unsubscribeMessageLimit()
+            unsubscribeMessageTimestamps()
         }
     }, [])
 
