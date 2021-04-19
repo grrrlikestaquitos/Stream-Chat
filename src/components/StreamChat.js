@@ -44,12 +44,17 @@ export const StreamChat = () => {
                 secure: true,
                 reconnect: true
             },
-            channels: ['grrrlikestaquitos']
+            channels: [userName]
         })
 
-        // connectAndListenToMessage()
-        // rerenderMessageList()
-    }, [])
+        connectAndListenToMessage()
+        rerenderMessageList()
+
+        return () => {
+            client.current.disconnect()
+            setMessages([])
+        }
+    }, [userName])
 
     useEffect(() => {
         const unsubscribe = store.onDidChange(config.username.key, (newUsername) => {
@@ -61,7 +66,7 @@ export const StreamChat = () => {
     }, [])
 
     useEffect(() => {
-        autoScrollEnabled && scrollToBottom()
+        autoScrollEnabled && messages.length > 0 && scrollToBottom()
     }, [messages])
 
     // Message Handling
