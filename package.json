@@ -2,22 +2,6 @@
   "name": "twitch-chat",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-scripts": "4.0.3",
-    "react-transition-group": "^4.4.1",
-    "electron-store": "7.0.3",
-    "tmi.js": "^1.7.5",
-    "web-vitals": "^1.0.1"
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "electron": "^12.0.1",
-    "foreman": "^3.0.1"
-  },
   "main": "main.js",
   "homepage": "./",
   "scripts": {
@@ -28,7 +12,42 @@
     "electron": "electron .",
     "electron-dev": "ELECTRON_START_URL=http://localhost:3000 && electron .",
     "electron-start": "node electron-wait-react",
-    "react-start": "react-scripts start"
+    "react-start": "react-scripts start",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "villasana.andrei.stream-chat",
+    "extends": null,
+    "mac": {
+      "category": "villasana.andrei.chat."
+    },
+    "files": [
+      "./**/*",
+      "./assets/**",
+      "./build/**/*",
+      "./electron-wait-react.js"
+    ],
+    "directories": {
+      "buildResources": "./assets"
+    }
+  },
+  "dependencies": {
+    "electron-store": "7.0.3",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-scripts": "4.0.3",
+    "react-transition-group": "^4.4.1",
+    "tmi.js": "^1.7.5",
+    "web-vitals": "^1.0.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "electron": "^12.0.1",
+    "electron-builder": "^22.10.5",
+    "foreman": "^3.0.1"
   },
   "eslintConfig": {
     "extends": [

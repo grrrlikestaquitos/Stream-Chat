@@ -8,8 +8,9 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require('path')
 const url = require('url')
 const Store = require('electron-store')
-const { defaults, config } = require('./src/config')
+const Config = require('./src/config')
 
+const { defaults, config } = Config
 const store = new Store({ defaults })
 
 // store.initRenderer()

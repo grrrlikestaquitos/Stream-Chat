@@ -1,4 +1,4 @@
-export default {
+const Constants = {
     chat: {
         chatHeader: 'Chat',
         chatPaused: 'Chat Paused',
@@ -15,3 +15,5 @@ export default {
         resetSettings: 'Reset Settings'
     }
 }
+
+export default Constants

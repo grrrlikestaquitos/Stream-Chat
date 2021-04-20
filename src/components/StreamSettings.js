@@ -2,10 +2,10 @@ import { StreamHeader } from './StreamHeader'
 import { StreamUserInput } from './StreamUserInput'
 import { StreamSettingsFeature } from './StreamSettingsFeature'
 import Constants from '../util/constants'
-import Config from '../config'
-import { RendererStore as store } from '../util/rendere-store'
+import { RendererStore as store } from '../util/renderer-store'
 import '../css/App.css'
-const { config } = Config
+
+const { config } = require('../config')
 
 export const StreamSettings = () => {
     const listOfFeatures = [

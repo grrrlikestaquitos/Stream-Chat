@@ -1,7 +1,8 @@
 import { useCallback } from 'react'
-import { RendererStore as store } from '../util/rendere-store'
+import { RendererStore as store } from '../util/renderer-store'
 import '../css/App.css'
-import { config } from '../config'
+
+const { config } = require('../config')
 
 // PROPS
 // username (string, required)

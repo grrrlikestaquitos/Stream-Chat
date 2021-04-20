@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { RendererStore as store } from '../util/rendere-store'
+import { RendererStore as store } from '../util/renderer-store'
 import '../css/App.css'
 
 export const StreamSettingsFeature = ({ keyId, title, type }) => {
