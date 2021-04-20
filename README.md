@@ -1,6 +1,14 @@
 # Stream-Chat
 A Stream Chat for Twitch - built with React
 
+## Preview of Stream Chat
+A quick preview on how to connect Twitch to Stream Chat.
+You can also toggle features on/off on the settings page.
+<img src="./src/images/StreamChatDemo.gif" width='60%' loop='infinite'>;
+
+A quick preview on certain feature sets such as auto scrolling and changing limit of messages displayed.
+<img src="./src/images/StreamChatDemo2.gif" width='60%' loop='infinite'>;
+
 ## Features
 - Auto Scrolling (Continue/Paused)
 - Scroll Through Previous Messages
