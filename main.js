@@ -30,7 +30,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
-            // webSecurity: false
+            devTools: false
         }
     });
 
@@ -45,7 +45,7 @@ function createWindow() {
     mainWindow.loadURL(startUrl);
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     // On window resize
     mainWindow.on('resize', () => {

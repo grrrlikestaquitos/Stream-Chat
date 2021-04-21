@@ -1,6 +1,6 @@
 {
   "short_name": "Stream Chat",
-  "name": "Stream Chat - Twitch",
+  "name": "Stream Chat",
   "icons": [],
   "start_url": ".",
   "display": "standalone",
