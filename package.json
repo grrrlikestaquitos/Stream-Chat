@@ -1,5 +1,6 @@
 {
-  "name": "Stream Chat",
+  "name": "stream-chat",
+  "productName": "Stream Chat",
   "version": "1.0.0",
   "private": true,
   "main": "main.js",
@@ -14,7 +15,7 @@
     "electron-start": "node electron-wait-react",
     "react-start": "react-scripts start",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder -mwl"
   },
   "build": {
     "appId": "villasana.andrei.stream-chat",
