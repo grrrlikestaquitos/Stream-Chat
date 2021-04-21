@@ -1,12 +1,12 @@
 # Stream-Chat
+![](./assets/icon-small.png)
+
 A Stream Chat for Twitch - built with React
 
+## Preview
 A quick preview on how to connect Twitch to Stream Chat.\
 You can also toggle features on/off on the settings page.\
-<img src="./src/images/StreamChatDemo.gif" width='70%' loop='infinite'>;
-
-A quick preview on certain feature sets such as auto scrolling and changing limit of messages displayed.\
-<img src="./src/images/StreamChatDemo2.gif" width='70%' loop='infinite'>;
+<img src="./src/images/StreamChatDemo.gif" width='50%' loop='infinite'>;
 
 ## Features
 - Auto Scrolling (Continue/Paused)
@@ -15,20 +15,22 @@ A quick preview on certain feature sets such as auto scrolling and changing limi
 - Consecutive Message Merging
 - Viewer Color Reference (@username)
 - Preserve Window Size
+- Limit Number Of Saved Messages (Default 50)
 - Settings Page
   - Persistent User Settings
   - Enable/Disable Features
   - Reset Settings
-- On Launch Ask Username
-- Limit Number Of Saved Messages (Default 50)
 
 ## Requested Features
+- Change Background Color
+  - Themes (Light/Dark/Custom)
+- Chat Count
+  - Unique Users
+  - Total Chat Count
 - Animations (Fade In, Slide, Spring)
 - Censorship/Filtering/Replace Messages
-- Chat count
-  - Unique visitor messages
-  - Count of messages in chat
 - Auto Update
 - Twitch Emotes
-- Streamer/Broadcaster can reply to specific messages
 - Viewer badges
+- Account OAUTH
+  - Streamer/Broadcaster can reply to specific messages
