@@ -29,7 +29,7 @@
       "./electron-wait-react.js"
     ],
     "directories": {
-      "buildResources": "./assets"
+      "buildResources": "./build"
     }
   },
   "dependencies": {
