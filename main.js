@@ -8,9 +8,10 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require('path')
 const url = require('url')
 const Store = require('electron-store')
-const Config = require('./src/config')
 
-const { defaults, config } = Config
+const defaults = {
+    'windowBounds': { width: 800, height: 600 },
+}
 const store = new Store({ defaults })
 
 // store.initRenderer()
@@ -20,7 +21,7 @@ let mainWindow;
 
 function createWindow() {
     // Get width and height from store
-    let { width, height } = store.get(config.windowBounds.key);
+    let { width, height } = store.get('windowBounds');
 
     // Create the browser window.
     mainWindow = new BrowserWindow({ 
@@ -52,7 +53,8 @@ function createWindow() {
         // the height, width, and x and y coordinates.
         let { width, height } = mainWindow.getBounds();
         // Now that we have them, save them using the `set` method.
-        store.set(config.windowBounds.key, { width, height });
+        
+        store.set('windowBounds', { width, height });
       });
 
     // Emitted when the window is closed.

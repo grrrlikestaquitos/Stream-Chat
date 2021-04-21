@@ -7,9 +7,9 @@ import { StreamHeader } from './StreamHeader'
 import SettingsLogo from '../images/settings-logo-2.svg'
 import Constants from '../util/constants'
 import { RendererStore as store } from '../util/renderer-store'
+import { config } from '../config'
 import '../css/App.css'
 
-const { config } = require('../config')
 
 export const StreamChat = () => {
     const storedUsername = store.get(config.username.key)

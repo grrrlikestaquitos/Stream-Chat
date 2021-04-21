@@ -2,9 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import TwitchLogo from '../images/twitch-logo-purple.svg'
 import Constants from '../util/constants'
 import { RendererStore as store } from '../util/renderer-store'
+import { config } from '../config'
 import '../css/App.css'
-
-const { config } = require('../config')
 
 export const StreamUserInput = () => {
     const storedUsername = store.get(config.username.key)

@@ -7,9 +7,9 @@ const Config = {
     viewerColorReferenceInChat: { key: 'viewerColorReferenceInChat', type: 'boolean', title: 'Enable User Mention Color Matching' }
 }
 
-module.exports.config = Config
+export const config = Config
 
-module.exports.defaults = {
+export const defaults = {
     [Config.windowBounds.key]: { width: 800, height: 600 },
     [Config.username.key]: '',
     [Config.enableTimestamps.key]: true,
@@ -17,4 +17,3 @@ module.exports.defaults = {
     [Config.messageLimit.key]: 50,
     [Config.viewerColorReferenceInChat.key]: true
 }
-
