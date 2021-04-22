@@ -2,7 +2,7 @@ import '../css/App.css'
 
 export const StreamHeader = ({ color, children }) => {
     return (
-        <div style={{ ...Styles.headerDiv, backgroundColor: color }}>
+        <div className="headerDraggable" style={{ ...Styles.headerDiv, backgroundColor: color }}>
             {children}
         </div>
     )
